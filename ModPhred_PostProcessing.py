@@ -162,7 +162,10 @@ def main():
     DensityPlots(ModFreq_data, output, '_DensityPlots_ModFreq_CoverageBased.pdf', labels, samples)
 
     #OUTPUT 2: Scatter plots within replicates including data from sites with cov>=25 in ALL samples:
-    groups = set(labels)
+    groups = list()
+    for ind_group in labels:
+        if ind_group not in groups:
+            groups.append(ind_group)
 
     for n in groups: 
 
@@ -210,13 +213,14 @@ def main():
 
         ##Analyse replicates data:
         reps = mergeLists(replicates_data, "outer")
-
+        
         #Extract coverage columns:
         coverage_rep = extractColumnData(reps, 5)
         mod_freq_rep = extractColumnData(reps, 7)
 
         peaks_cov_AllSamples_condition = reps.loc[(reps.iloc[:,coverage_rep]>=25).all(axis=1)]
         peaks_modfreq_AllSamples_condition = peaks_cov_AllSamples_condition.loc[(peaks_cov_AllSamples_condition.iloc[:,mod_freq_rep]>=0.05).all(axis=1)]
+        
         replicable_per_condition.append(peaks_modfreq_AllSamples_condition)
 
         n_cov = peaks_cov_AllSamples_condition.shape[0]
@@ -234,7 +238,7 @@ def main():
     n_intersection = reps_conditions_inner.shape[0]
     n_cond1 = replicable_per_condition[0].shape[0]
     n_cond2 = replicable_per_condition[1].shape[0]
-
+    
     VennDiagram_2groups(n_cond1, n_cond2, n_intersection, "_VennDiagram_ReplicableSites_AcrossConditions_PeakBased.pdf", 
                             conditions, "Replicable sites (Cov>=25 and ModFreq>=0.05) across conditions") 
 
@@ -243,7 +247,7 @@ def main():
     n_cond = outer_allCov.shape[0]
 
     VennDiagram_2groups(n_cond, n_cond, n_intersection, "_VennDiagram_ReplicableSites_AcrossConditions_CovAllSamples_PeakBased.pdf", 
-                            samples_names, "Replicable sites (Cov>=25 and ModFreq>=0.05) with Cov>=25 in all samples") 
+                            conditions, "Replicable sites (Cov>=25 and ModFreq>=0.05) with Cov>=25 in all samples") 
     
 if __name__ == "__main__":
     main()
