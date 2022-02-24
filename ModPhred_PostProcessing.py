@@ -5,7 +5,7 @@ from functools import reduce
 import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy as sp
-from matplotlib_venn import venn2
+from venn import venn
 import numpy as np
 import matplotlib.ticker as mticker
 from matplotlib.ticker import FormatStrFormatter
@@ -44,13 +44,18 @@ def InputCheck_Preprocessing(data, labels, samples, conditions):
         
     return(data)
     
-def VennDiagram_2groups(n_cond1, n_cond2, n_intersection, output, samples_names, graph_title):
-    vd = venn2(subsets = (n_cond1-n_intersection, n_cond2-n_intersection, n_intersection), 
-               set_labels = (samples_names[0], samples_names[1]))
-    plt.title(graph_title)
-    plt.savefig(samples_names[0]+"_"+samples_names[1]+output, dpi=300)
-    plt.close()
+#def VennDiagram_2groups(n_cond1, n_cond2, n_intersection, output, samples_names, graph_title):
+#    vd = venn2(subsets = (n_cond1-n_intersection, n_cond2-n_intersection, n_intersection), 
+#               set_labels = (samples_names[0], samples_names[1]))
+#    plt.title(graph_title)
+#    plt.savefig(samples_names[0]+"_"+samples_names[1]+output, dpi=300)
+#    plt.close()
 
+def VennDiagrams(dict_ids, output_file):
+    fig = venn(dict_ids, cmap="viridis", fontsize=14, legend_loc="lower right", figsize=(12,12))
+    plt.savefig(output_file+".pdf", dpi=300, bbox_inches='tight')   
+    plt.close() 
+    
 def ScatterPlots_withR2(twoSamples_df, output, graph_title, log_scale):
     sns.set(rc={'figure.figsize':(7,6)})
     sns.set_theme(style="whitegrid")
@@ -93,7 +98,7 @@ def ScatterPlot_ChangingSites(data, conditions):
     sns.set_theme(style="whitegrid")
 
     xy = sns.scatterplot(data=data, x=data.columns[6], hue = data["Status"],
-                        y=data.columns[7], style = "Group",
+                        y=data.columns[7],
                         palette=["grey", "blue", "red"])
     xy.plot([0,1],[0,1], 'black', linewidth=2, linestyle="dashed")
     xy.set(xlabel = conditions[0], ylabel = conditions[1])
@@ -159,7 +164,7 @@ def Barplots_ReplicableSites(total_sites, mod_AL1, mod_Both, samples_names):
 def mergeLists(list_toMerge, type_merge):
     mergedList = reduce(lambda left, right:
                             pd.merge(left , right,
-                            on = ["chr", "pos", "ref_base", "strand", "mod"],
+                            on = ["chr", "pos", "ref_base", "strand", "mod", "Site_ID"],
                             how = type_merge),
                             list_toMerge)
     
@@ -194,14 +199,28 @@ def main():
     coverage = extractColumnData(data, 5)
     mod_freq = extractColumnData(data, 7)
 
+    #Determine the number of sites with coverage>50 in ALL samples:
     peaks_cov_AllSamples = data.loc[(data.iloc[:,coverage]>=50).all(axis=1)]
+    peaks_cov_AllSamples["Site_ID"] = peaks_cov_AllSamples["chr"]+"_"+peaks_cov_AllSamples["pos"].astype("str")+"_"+peaks_cov_AllSamples["strand"]
+    print("Total sites with coverage>50 in ALL samples: " + str(peaks_cov_AllSamples.shape[0]))
 
     #OUTPUT 1: Density plots with data from sites with cov>=50 in ALL samples:
     #ModFreq density plot:
-    ModFreq_data = peaks_cov_AllSamples.iloc[:,mod_freq]
-    DensityPlots(ModFreq_data, output, '_DensityPlots_ModFreq_CoverageBased.pdf', labels, samples)
+    ModFreq_data = pd.concat([peaks_cov_AllSamples.iloc[:,mod_freq], peaks_cov_AllSamples.iloc[:,-1]], axis=1)
+    DensityPlots(ModFreq_data.iloc[:,:-1], output, '_DensityPlots_ModFreq_CoverageBased.pdf', labels, samples)
 
-    #OUTPUT 2: Scatter plots within replicates including data from sites with cov>=50 in ALL samples:
+    #OUTPUT 2: VennDiagrams from modified sites identified in each individual sample + coverage>50 in ALL samples: 
+    sites_indSamples = dict()
+
+    for s in range(0,ModFreq_data.shape[1]-1):
+        sites = set(ModFreq_data.loc[ModFreq_data.iloc[:,s] >= 0.05,"Site_ID"])
+        ind_label = ModFreq_data.columns[s].replace("_ModFreq", "") + " - Modified sites: " + str(len(sites))
+        sites_indSamples[ind_label] = sites
+
+    #VennDiagram (input, dataframe with IDs, labels, samples): 
+    VennDiagrams(sites_indSamples, output+"_VennDiagram_ModifiedSitesPerSample_AllCoverage_CoverageBased")
+
+    #OUTPUT 3: Scatter plots within replicates including data from sites with cov>=50 in ALL samples:
     groups = list()
     for ind_group in labels:
         if ind_group not in groups:
@@ -222,9 +241,10 @@ def main():
         #Scatter plot ModFreq comparing replicates within the same condition (log scale):
         ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
                             "% Mod - Sites with coverage>50 in all samples", True)
-        
+
     ##PEAK BASED ANALYSIS:
-    #OUTPUT 3: VennDiagrams of replicable peaks (cov>=25 + freq>=0.05) - including sites with cov>25 in all reps too
+    #OUTPUT 4: VennDiagrams of replicable peaks (cov>=25 + freq>=0.05) - including sites with cov>25 in all reps too
+    site_id_idx = peaks_cov_AllSamples.shape[1]-1
     columns = list(range(0,5))
     replicable_per_condition = list()
 
@@ -242,7 +262,8 @@ def main():
                 columns.extend(range(initial,final))
 
                 #Append to the data from the other replicates (if any):
-                replicates_data.append(data.iloc[:,columns])
+                columns.append(site_id_idx)
+                replicates_data.append(peaks_cov_AllSamples.iloc[:,columns])
                 columns = list(range(0,5))
 
                 #Extract sample names:
@@ -251,6 +272,7 @@ def main():
             else:
                 continue
 
+
         ##Analyse replicates data:
         reps = mergeLists(replicates_data, "outer")
 
@@ -258,101 +280,70 @@ def main():
         coverage_rep = extractColumnData(reps, 5)
         mod_freq_rep = extractColumnData(reps, 7)
 
-        peaks_cov_AllSamples_condition = reps.loc[(reps.iloc[:,coverage_rep]>=50).all(axis=1)]
-        peaks_modfreq_AllSamples_condition = peaks_cov_AllSamples_condition.loc[(peaks_cov_AllSamples_condition.iloc[:,mod_freq_rep]>=0.05).all(axis=1)]
+        peaks_modfreq_AllSamples_condition = reps.loc[(reps.iloc[:,mod_freq_rep]>=0.05).all(axis=1)]
         replicable_per_condition.append(peaks_modfreq_AllSamples_condition)
 
-        n_cov = peaks_cov_AllSamples_condition.shape[0]
+        n_cov = reps.shape[0]
 
         ##Assuming only two replicates - NEED TO BE IMPROVED:
-        n_cov1 = peaks_cov_AllSamples_condition.loc[(peaks_cov_AllSamples_condition.iloc[:,mod_freq_rep[0]]>=0.05)]
-        n_cov2 = peaks_cov_AllSamples_condition.loc[(peaks_cov_AllSamples_condition.iloc[:,mod_freq_rep[1]]>=0.05)]
+        n_cov1 = reps.loc[(reps.iloc[:,mod_freq_rep[0]]>=0.05)]
+        n_cov2 = reps.loc[(reps.iloc[:,mod_freq_rep[1]]>=0.05)]
+
         inner_ncov = mergeLists(list([n_cov1,n_cov2]), "outer")   
         n_freq = peaks_modfreq_AllSamples_condition.shape[0]
 
         #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
         Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names)
 
-    #OUTPUT 4 and 5: VennDiagrams of replicable peaks (cov>=50 + freq>=0.05) across conditions:
-    reps_conditions_inner = mergeLists(replicable_per_condition, "inner")
-    reps_conditions_outer_coordinates = mergeLists(replicable_per_condition, "outer").iloc[:,0:5]
+    #OUTPUT 5: VennDiagrams of replicable peaks (cov>=50 + freq>=0.05) across conditions:
+    #Plot the VennDiagram of replicable peaks across conditions: 
+    replicable_sites_dict = dict()
+    for count,condition in enumerate(conditions):
+        replicable_sites_dict[condition] = set(replicable_per_condition[count].loc[:,"Site_ID"])
 
-    #Venn Diagram of replicate peaks across conditions:
-    n_intersection = reps_conditions_inner.shape[0]
-    n_cond1 = replicable_per_condition[0].shape[0]
-    n_cond2 = replicable_per_condition[1].shape[0]
+    VennDiagrams(replicable_sites_dict, output+"_VennDiagram_ReplicableSites_AcrossConditions_AllCoverage_PeakBased")
 
-    VennDiagram_2groups(n_cond1, n_cond2, n_intersection, "_VennDiagram_ReplicableSites_AcrossConditions_PeakBased.pdf", 
-                            conditions, "Replicable sites (Cov>=50 and ModFreq>=0.05) across conditions") 
-
-    #Venn Diagram of replicate peaks across conditions with coverage>=25 in ALL samples:
-    reps_conditions_outer = pd.merge(reps_conditions_outer_coordinates , data,
-                                on = ["chr", "pos", "ref_base", "strand", "mod"],
+    #OUTPUT 6: Define changing sites across conditions and optional overlap with an annotation file provided by the user:
+    replicable_sites_coordinates = mergeLists(replicable_per_condition, "outer").loc[:,"Site_ID"]
+    replicable_sites = pd.merge(replicable_sites_coordinates, peaks_cov_AllSamples,
+                                on = ["Site_ID"],
                                 how = "inner")
 
-    outer_allCov = reps_conditions_outer.loc[(reps_conditions_outer.iloc[:,coverage]>=50).all(axis=1)]
-    n_intersection = outer_allCov.loc[(outer_allCov.iloc[:,mod_freq]>=0.05).all(axis=1)]
-    n_cond1 = pd.merge(outer_allCov,replicable_per_condition[0],
-                                on = ["chr", "pos", "ref_base", "strand", "mod"],
-                                how = "inner")
-
-    n_cond2 = pd.merge(outer_allCov,replicable_per_condition[1],
-                                on = ["chr", "pos", "ref_base", "strand", "mod"],
-                                how = "inner")
-
-    VennDiagram_2groups(n_cond1.shape[0], n_cond2.shape[0], n_intersection.shape[0], "_VennDiagram_ReplicableSites_AcrossConditions_CovAllSamples_PeakBased.pdf", 
-                            conditions, "Replicable sites (Cov>=50 and ModFreq>=0.05) with Cov>=50 in all samples") 
-    
-    #OUTPUT 6 and 7: Data from replicable peaks across conditions that have enough coverage in ALL samples: 
-    #Classify the results in 2 groups:
-    group = list()
-    for element in (outer_allCov.iloc[:,mod_freq]>=0.05).all(axis=1):
-        if element:
-            group.append(2)
-        else:
-            group.append(1)
-
-    outer_allCov["Group"] = group
-
-    #Calculate medians:
+    #Calculate ModFreq median:
     for j in range(0, len(conditions)):           
-        outer_allCov[conditions[j]+"_medianModFreq"] = outer_allCov.filter(like=conditions[j]).filter(like='_ModFreq').median(axis=1)
+        replicable_sites[conditions[j]+"_medianModFreq"] = replicable_sites.filter(like=conditions[j]).filter(like='_ModFreq').median(axis=1)
 
-    #Calculate difference and ratios between conditions:
-    medians_cond1 = outer_allCov.iloc[:,outer_allCov.shape[1]-2]
-    medians_cond2 = outer_allCov.iloc[:,outer_allCov.shape[1]-1]
-    outer_allCov["ModFreq(Cond1-Cond2)"] = medians_cond1 - medians_cond2
-    outer_allCov["Ratio(Cond1/Cond2)"] = medians_cond1/medians_cond2
+    #Calculate ModFreq differences and ratios between conditions:
+    replicable_sites["ModFreq(Cond1-Cond2)"] = replicable_sites.filter(like="_medianModFreq").iloc[:,0] - replicable_sites.filter(like="_medianModFreq").iloc[:,1]
+    replicable_sites["Ratio(Cond1/Cond2)"] = replicable_sites.filter(like="_medianModFreq").iloc[:,0]/replicable_sites.filter(like="_medianModFreq").iloc[:,1]
 
     #Determine directionalities:
     status = list()
-    for index,row in outer_allCov.iterrows():
+    for index,row in replicable_sites.iterrows():
         diff_ModFreq = row["ModFreq(Cond1-Cond2)"]
         ratio_ModFreq = row["Ratio(Cond1/Cond2)"]
-        g = row["Group"]
 
-        #Update status:
-        if g==1:
-            if diff_ModFreq>0:
-                status.append("Decreased upon "+conditions[1])
-            else:
-                status.append("Increased upon "+conditions[1])
+        if (diff_ModFreq>=0.2 or ratio_ModFreq>=2):
+            status.append("Decreased upon "+conditions[1])
+        elif (diff_ModFreq<=(-0.2) or ratio_ModFreq<=0.5):
+            status.append("Increased upon "+conditions[1])
         else:
-            #Group 2: decrease/increase
-            if (diff_ModFreq>=0.1 or ratio_ModFreq>=2):
-                status.append("Decreased upon "+conditions[1])
-            elif (diff_ModFreq<=(-0.1) or ratio_ModFreq<=0.5):
-                status.append("Increased upon "+conditions[1])
-            else:
-                status.append("No changes")
+            status.append("No changes")
 
-    outer_allCov["Status"] = status
-    outer_allCov.to_csv(output+"_RawData_ReplicablePeaks_AllCov_PeakBased.tsv", sep="\t", index=False)
-    outer_allCov_Processed = pd.concat([outer_allCov.iloc[:,0:5], outer_allCov.iloc[:,-6:]], axis=1)
-    outer_allCov_Processed.to_csv(output+"_ProcessedData_ReplicablePeaks_AllCov_PeakBased.tsv", sep="\t", index=False)
+    replicable_sites["Status"] = status
+
+    ##MISSING HERE: OPTIONAL OVERLAPPING WITH ANNOTATION PROVIDED BY THE USER
+
+    #Report replicable sites - all data:
+    replicable_sites.to_csv(output+"_RawData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+
+    #Report replicable sites - summary of analysis:
+    replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-5:]], axis=1)
+    replicable_sites_processed.to_csv(output+"_SummaryData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+
     
-    ## OUTPUT 8: Scatter plot with changing sites (only sites with enough cov in all samples):
-    ScatterPlot_ChangingSites(outer_allCov_Processed, conditions)
+    # OUTPUT 7: Scatter plot with changing sites (only sites with enough cov in all samples):
+    ScatterPlot_ChangingSites(replicable_sites_processed, conditions)
 
 if __name__ == "__main__":
     main()
