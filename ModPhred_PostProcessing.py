@@ -9,7 +9,11 @@ from venn import venn
 import numpy as np
 import matplotlib.ticker as mticker
 from matplotlib.ticker import FormatStrFormatter
+import pybedtools
 import argparse
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+pd.options.mode.chained_assignment = None  # default='warn'
 
 #Start input parser:
 parser = argparse.ArgumentParser()
@@ -19,6 +23,8 @@ parser.add_argument("-o", "--output", help="Output name.")
 parser.add_argument("-c", "--conditions", nargs="+", help="Conditions included in the analysis. ie: WT, KO.")
 parser.add_argument("-s", "--samples", nargs="+", help="Samples included in the analysis. ie: WT1, WT2, KO1, KO2.")
 parser.add_argument("-l", "--labels", nargs="+", help="Group in which the sample is included. ie: 1, 1, 2, 2.")
+parser.add_argument("-bed", "--bed_file", default=None, help="Bed file with genes to annotate the replicable m6A sites.")
+
 
 #Read arguments from the command line
 args = parser.parse_args()
@@ -44,15 +50,8 @@ def InputCheck_Preprocessing(data, labels, samples, conditions):
         
     return(data)
     
-#def VennDiagram_2groups(n_cond1, n_cond2, n_intersection, output, samples_names, graph_title):
-#    vd = venn2(subsets = (n_cond1-n_intersection, n_cond2-n_intersection, n_intersection), 
-#               set_labels = (samples_names[0], samples_names[1]))
-#    plt.title(graph_title)
-#    plt.savefig(samples_names[0]+"_"+samples_names[1]+output, dpi=300)
-#    plt.close()
-
 def VennDiagrams(dict_ids, output_file):
-    fig = venn(dict_ids, cmap="viridis", fontsize=14, legend_loc="lower right", figsize=(12,12))
+    fig = venn(dict_ids, cmap="plasma", fontsize=14, legend_loc="lower right", figsize=(12,12))
     plt.savefig(output_file+".pdf", dpi=300, bbox_inches='tight')   
     plt.close() 
     
@@ -170,14 +169,21 @@ def mergeLists(list_toMerge, type_merge):
     
     return(mergedList)
 
-def extractColumnData(data, initial_column):
+
+def extractColumnData(data, initial_column, non_processed):
     column_list = list()
     n_reps = int((data.shape[1]-5)/4)
-
+    initial = True
+    
     if n_reps>1:
         for i in range(0,n_reps):
-            column_list.append(initial_column+(4*i))
-
+            if initial: 
+                column_list.append(initial_column)
+                initial = False
+            elif non_processed:
+                column_list.append(initial_column+(4*i))
+            else:
+                column_list.append(initial_column+(4*i)+1)
     else:
         column_list.append(initial_column)
     
@@ -196,8 +202,8 @@ def main():
     
     ##COVERAGE BASED ANALYSIS:
     #Extract coverage and mod_freq information:
-    coverage = extractColumnData(data, 5)
-    mod_freq = extractColumnData(data, 7)
+    coverage = extractColumnData(data, 5, True)
+    mod_freq = extractColumnData(data, 7, True)
 
     #Determine the number of sites with coverage>50 in ALL samples:
     peaks_cov_AllSamples = data.loc[(data.iloc[:,coverage]>=50).all(axis=1)]
@@ -220,6 +226,10 @@ def main():
     #VennDiagram (input, dataframe with IDs, labels, samples): 
     VennDiagrams(sites_indSamples, output+"_VennDiagram_ModifiedSitesPerSample_AllCoverage_CoverageBased")
 
+    #Print the data to the user:
+    for key in sites_indSamples.keys():
+        print(key)
+        
     #OUTPUT 3: Scatter plots within replicates including data from sites with cov>=50 in ALL samples:
     groups = list()
     for ind_group in labels:
@@ -277,24 +287,26 @@ def main():
         reps = mergeLists(replicates_data, "outer")
 
         #Extract coverage columns:
-        coverage_rep = extractColumnData(reps, 5)
-        mod_freq_rep = extractColumnData(reps, 7)
+        coverage_rep = extractColumnData(reps, 5, False)
+        mod_freq_rep = extractColumnData(reps, 7, False)
 
         peaks_modfreq_AllSamples_condition = reps.loc[(reps.iloc[:,mod_freq_rep]>=0.05).all(axis=1)]
         replicable_per_condition.append(peaks_modfreq_AllSamples_condition)
 
         n_cov = reps.shape[0]
 
-        ##Assuming only two replicates - NEED TO BE IMPROVED:
-        n_cov1 = reps.loc[(reps.iloc[:,mod_freq_rep[0]]>=0.05)]
-        n_cov2 = reps.loc[(reps.iloc[:,mod_freq_rep[1]]>=0.05)]
+        #Identification of sites reported as modified (modfreq>=0.05) in at least one rep:
+        n_cov_singleSamples = list()
 
-        inner_ncov = mergeLists(list([n_cov1,n_cov2]), "outer")   
+        for ss in range(0,len(mod_freq_rep)):
+            n_cov_singleSamples.append(reps.loc[(reps.iloc[:,mod_freq_rep[ss]]>=0.05)])
+
+        inner_ncov = mergeLists(n_cov_singleSamples, "outer")
         n_freq = peaks_modfreq_AllSamples_condition.shape[0]
 
         #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
         Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names)
-
+        
     #OUTPUT 5: VennDiagrams of replicable peaks (cov>=50 + freq>=0.05) across conditions:
     #Plot the VennDiagram of replicable peaks across conditions: 
     replicable_sites_dict = dict()
@@ -332,14 +344,39 @@ def main():
 
     replicable_sites["Status"] = status
 
-    ##MISSING HERE: OPTIONAL OVERLAPPING WITH ANNOTATION PROVIDED BY THE USER
+    #Optional annotation of the replicable m6A sites with bed file provided by the user:
+    
+    if args.bed_file is None:
+        #Report replicable sites - all data:
+        replicable_sites.to_csv(output+"_RawData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
 
-    #Report replicable sites - all data:
-    replicable_sites.to_csv(output+"_RawData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+        #Report replicable sites - summary of analysis:
+        replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-5:]], axis=1)
+        replicable_sites_processed.to_csv(output+"_SummaryData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+        
+    else:
+        bed_format = pd.concat([replicable_sites.iloc[:,1], replicable_sites.iloc[:,2], replicable_sites.iloc[:,2]+1, 
+                       replicable_sites.iloc[:,0], pd.Series([0] * len(replicable_sites)),
+                       replicable_sites.iloc[:,4]], axis=1)
+        
+        a = pybedtools.BedTool.from_dataframe(bed_format)
+        b = pybedtools.BedTool(args.bed_file)
 
-    #Report replicable sites - summary of analysis:
-    replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-5:]], axis=1)
-    replicable_sites_processed.to_csv(output+"_SummaryData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+        #Intersection: 
+        intersection = a.intersect(b, wb=True).to_dataframe().iloc[:,[3,9]]
+        intersection.rename(columns={'name': 'Site_ID', 'blockCount': 'Gene'}, inplace=True)
+
+        #Merge:
+        replicable_sites = pd.merge(replicable_sites , intersection,
+                                    on = ["Site_ID"],
+                                    how = "outer")    
+    
+        #Report replicable sites - all data:
+        replicable_sites.to_csv(output+"_RawData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+
+        #Report replicable sites - summary of analysis:
+        replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-6:]], axis=1)
+        replicable_sites_processed.to_csv(output+"_SummaryData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
 
     
     # OUTPUT 7: Scatter plot with changing sites (only sites with enough cov in all samples):
