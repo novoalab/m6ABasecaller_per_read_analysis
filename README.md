@@ -15,6 +15,6 @@ python ./ModPhred_PostProcessing/ModPhred_PostProcessing.py -i mod.gz -s conditi
 
 -o: output folder name
 
--bed: if you want to know in which genes the m6A sites are found, provide a bed files with the gene start and end coordinates and with a gene identifier at your choice (gene name, gene ID... etc)
+-bed: if you want to know in which genes the m6A sites are found, provide a bed file with the gene start and end coordinates and with a gene identifier at your choice (gene name, gene ID... etc)
 
 Note: the program does not require a matching number of replicates per condition (i.e. you can have 2 reps for WT and 3 for KO)
