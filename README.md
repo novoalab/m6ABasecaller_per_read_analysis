@@ -7,7 +7,7 @@ python ./ModPhred_PostProcessing/ModPhred_PostProcessing.py -i mod.gz -s conditi
 ```
 -i: this is the raw output file of ModPhred 
 
--s: names of the samples as you have input them to ModPhred, which correspond to the names of the columns in mod.gz. requires at least 2
+-s: names of the samples as you have input them to ModPhred, which correspond to the order of the columns in mod.gz. requires at least 2
 
 -c: experimental conditions (i.e. WT KO). requires at least 1.
 
