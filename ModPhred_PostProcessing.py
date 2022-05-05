@@ -26,7 +26,8 @@ parser.add_argument("-c", "--conditions", nargs="+", help="Conditions included i
 parser.add_argument("-s", "--samples", nargs="+", help="Samples included in the analysis. ie: WT1, WT2, KO1, KO2.")
 parser.add_argument("-l", "--labels", nargs="+", help="Group in which the sample is included. ie: 1, 1, 2, 2.")
 parser.add_argument("-bed", "--bed_file", default=None, help="Bed file with genes to annotate the replicable m6A sites.")
-
+parser.add_argument("-decay", "--decay", action="store_true", help="Include genes that have enough coverage in at least one condition.")
+parser.add_argument("-cov", "--coverage", default=50, type=int, help="Coverage threshold to use in the analysis.")
 
 #Read arguments from the command line
 args = parser.parse_args()
@@ -67,7 +68,8 @@ def ScatterPlots_withR2(twoSamples_df, output, graph_title, log_scale, output_pa
                         color="#3262b5")
     
     #Calculate R²:
-    r, pv = sp.stats.pearsonr(twoSamples_df.iloc[:,0], twoSamples_df.iloc[:,1])
+    print(twoSamples_df)
+    r, pv = sp.stats.pearsonr(twoSamples_df.dropna().iloc[:,0], twoSamples_df.dropna().iloc[:,1])
     ax = plt.gca()
     ax.text(.025, .9, 'r={:.3f}, p={:.2g}'.format(r, pv),
             transform=ax.transAxes)
@@ -135,7 +137,7 @@ def DensityPlots(ModFreq_data, output, file, labels, samples):
             ls = "dashed"
 
         #Create label:
-        median_sample = np.median(ModFreq_data.iloc[:,j])
+        median_sample = np.nanmedian(ModFreq_data.iloc[:,j])
         ind_label = samples[j]+" (median = "+"{0:.3f}".format(median_sample)+")"
         ax = sns.kdeplot(data=ModFreq_data, x=(ModFreq_data.iloc[:,j].replace(0, np.nan)), label=ind_label, color = c, 
                          linestyle=ls, log_scale=True, linewidth = 3)
@@ -250,10 +252,39 @@ def main():
     coverage = extractColumnData(data, 5, True)
     mod_freq = extractColumnData(data, 7, True)
 
-    #Determine the number of sites with coverage>50 in ALL samples:
-    peaks_cov_AllSamples = data.loc[(data.iloc[:,coverage]>=50).all(axis=1)]
+    #Include genes with decay:
+    if args.decay:
+        print('BE CAREFUL: Analysis will include all sites with cov>50 in at least one condition.')
+        groups = list()
+        for ind_group in labels:
+            if ind_group not in groups:
+                groups.append(ind_group)
+        
+        for n in groups: 
+            #Extract replicates data:
+            coverage_reps = list()
+            for count,label in enumerate(labels): 
+                if label==n:
+                    coverage_reps.append(coverage[count])
+ 
+            if 'data_reps' in locals():
+                data_reps = pd.concat([data_reps, data.loc[(data.iloc[:,coverage_reps]>=args.coverage).all(axis=1)]])
+            else: 
+                data_reps = data.loc[(data.iloc[:,coverage_reps]>=args.coverage).all(axis=1)]
+
+            
+            
+        peaks_cov_AllSamples = data_reps.drop_duplicates()
+        print("Total sites with coverage>50 in at least one condition: " + str(peaks_cov_AllSamples.shape[0]))
+
+    else:
+        #Determine the number of sites with coverage>50 in ALL samples:
+        peaks_cov_AllSamples = data.loc[(data.iloc[:,coverage]>=args.coverage).all(axis=1)]
+        print("Total sites with coverage>50 in ALL samples: " + str(peaks_cov_AllSamples.shape[0]))
+
+    #Add metadata:
     peaks_cov_AllSamples["Site_ID"] = peaks_cov_AllSamples["chr"]+"_"+peaks_cov_AllSamples["pos"].astype("str")+"_"+peaks_cov_AllSamples["strand"]
-    print("Total sites with coverage>50 in ALL samples: " + str(peaks_cov_AllSamples.shape[0]))
+    
 
     #OUTPUT 1: Density plots with data from sites with cov>=50 in ALL samples:
     #ModFreq density plot:
@@ -288,14 +319,24 @@ def main():
         for count,label in enumerate(labels): 
             if label==n:
                 modFreq_reps.append(count)
+        
+        if args.decay:
+            #Scatter plot ModFreq comparing replicates within the same condition (non-log scale):
+            ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_ModFreq_CoverageBased.pdf", 
+                                "% Mod - Sites with coverage>50 in at least one condition", False, output)
 
-        #Scatter plot ModFreq comparing replicates within the same condition (non-log scale):
-        ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_ModFreq_CoverageBased.pdf", 
-                            "% Mod - Sites with coverage>50 in all samples", False, output)
+            #Scatter plot ModFreq comparing replicates within the same condition (log scale):
+            ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
+                                "% Mod - Sites with coverage>50 in at least one condition", True, output)
 
-        #Scatter plot ModFreq comparing replicates within the same condition (log scale):
-        ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
-                            "% Mod - Sites with coverage>50 in all samples", True, output)
+        else:
+            #Scatter plot ModFreq comparing replicates within the same condition (non-log scale):
+            ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_ModFreq_CoverageBased.pdf", 
+                                "% Mod - Sites with coverage>50 in all samples", False, output)
+
+            #Scatter plot ModFreq comparing replicates within the same condition (log scale):
+            ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
+                                "% Mod - Sites with coverage>50 in all samples", True, output)
 
     ##PEAK BASED ANALYSIS:
     #OUTPUT 4: VennDiagrams of replicable peaks (cov>=25 + freq>=0.05) - including sites with cov>25 in all reps too
@@ -358,7 +399,7 @@ def main():
     for count,condition in enumerate(conditions):
         replicable_sites_dict[condition] = set(replicable_per_condition[count].loc[:,"Site_ID"])
 
-    VennDiagrams(replicable_sites_dict, output+"_VennDiagram_ReplicableSites_AcrossConditions_AllCoverage_PeakBased")
+    VennDiagrams(replicable_sites_dict, args.output+"_Output/Plots/"+output+"_VennDiagram_ReplicableSites_AcrossConditions_AllCoverage_PeakBased")
 
     #OUTPUT 6: Define changing sites across conditions and optional overlap with an annotation file provided by the user:
     replicable_sites_coordinates = mergeLists(replicable_per_condition, "outer").loc[:,"Site_ID"]
@@ -370,6 +411,8 @@ def main():
     for j in range(0, len(conditions)):           
         replicable_sites[conditions[j]+"_medianModFreq"] = replicable_sites.filter(like=conditions[j]).filter(like='_ModFreq').median(axis=1)
 
+
+    
     #Calculate ModFreq differences and ratios between conditions:
     replicable_sites["ModFreq(Cond1-Cond2)"] = replicable_sites.filter(like="_medianModFreq").iloc[:,0] - replicable_sites.filter(like="_medianModFreq").iloc[:,1]
     replicable_sites["Ratio(Cond1/Cond2)"] = replicable_sites.filter(like="_medianModFreq").iloc[:,0]/replicable_sites.filter(like="_medianModFreq").iloc[:,1]
@@ -390,7 +433,6 @@ def main():
     replicable_sites["Status"] = status
 
     #Optional annotation of the replicable m6A sites with bed file provided by the user:
-    
     if args.bed_file is None:
         #Report replicable sites - all data:
         replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
@@ -406,15 +448,20 @@ def main():
         
         a = pybedtools.BedTool.from_dataframe(bed_format)
         b = pybedtools.BedTool(args.bed_file)
-
+        
         #Intersection: 
-        intersection = a.intersect(b, wb=True).to_dataframe().iloc[:,[3,9]]
-        intersection.rename(columns={'name': 'Site_ID', 'blockCount': 'Gene'}, inplace=True)
+        #intersection = a.intersect(b, wb=True).to_dataframe().iloc[:,[3,9]]
+        intersection = a.intersect(b, wb=True).to_dataframe().iloc[:,[3,14]]
+        
+        #intersection.rename(columns={'name': 'Site_ID', 'blockCount': 'Gene'}, inplace=True)
+        intersection.columns = ["Site_ID", "Annotation"]
+        intersection["Gene"] = intersection["Annotation"].str.extract(r'\"(.*?)\"')
+        intersection.iloc[:,[0,2]]
 
         #Merge:
-        replicable_sites = pd.merge(replicable_sites , intersection,
+        replicable_sites = pd.merge(replicable_sites , intersection.iloc[:,[0,2]],
                                     on = ["Site_ID"],
-                                    how = "outer")    
+                                    how = "outer").drop_duplicates(keep='first')    
     
         #Report replicable sites - all data:
         replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
