@@ -44,3 +44,10 @@ python ./ModPhred_PostProcessing/ModPhred_PostProcessing.py -i mod.gz -s conditi
 python ./ModPhred_PostProcessing/ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed -decay
 ```
 # Expected output
+
+# Additional functionalities:
+Here, we also provide a R script that generates m6A metagene plots based on the results from the m6A basecaller:
+- Default command:
+```bash
+Rscript Metagene_Plots.R -i Sample1.bed Sample2.bed -o Test -gtf Annotation.gtf -l Sample-1 Sample-2
+```
