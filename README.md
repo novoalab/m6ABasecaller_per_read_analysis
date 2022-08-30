@@ -24,7 +24,7 @@ python ./ModPhred_PostProcessing/ModPhred_PostProcessing.py -i mod.gz -s conditi
 
 -s: names of the samples as you have input them to ModPhred, which correspond to the order of the columns in mod.gz. requires at least 2
 
--c: experimental conditions (i.e. WT KO). requires at least 1.
+-c: experimental conditions (i.e. WT KO). requires at least 1 and the conditions need to have the same naming as the samples (ex. KO WT for KO1 KO2 WT1 WT2)
 
 -l: ordinal number matching the sample names to the conditions (i.e. -s WT1 WT2 KO1 KO2 KO3 -c WT KO -l 1 1 2 2 2). 
 
