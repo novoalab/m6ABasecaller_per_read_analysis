@@ -25,7 +25,7 @@ parser.add_argument("-r", "--reference", help="Reference file (*.fa).")
 parser.add_argument("-c", "--conditions", nargs="+", help="Conditions included in the analysis. ie: WT, KO.")
 parser.add_argument("-s", "--samples", nargs="+", help="Samples included in the analysis. ie: WT1, WT2, KO1, KO2.")
 parser.add_argument("-l", "--labels", nargs="+", help="Group in which the sample is included. ie: 1, 1, 2, 2.")
-parser.add_argument("-bed", "--bed_file", default=None, help="Bed file with genes to annotate the replicable m6A sites.")
+parser.add_argument("-gtf", "--gtf_file", default=None, help="Gtf file with genes to annotate the replicable m6A sites (*.gtf).")
 parser.add_argument("-decay", "--decay", action="store_true", help="Include genes that have enough coverage in at least one condition.")
 parser.add_argument("-cov", "--coverage", default=50, type=int, help="Coverage threshold to use in the analysis.")
 
@@ -68,7 +68,6 @@ def ScatterPlots_withR2(twoSamples_df, output, graph_title, log_scale, output_pa
                         color="#3262b5")
     
     #Calculate R²:
-    print(twoSamples_df)
     r, pv = sp.stats.pearsonr(twoSamples_df.dropna().iloc[:,0], twoSamples_df.dropna().iloc[:,1])
     ax = plt.gca()
     ax.text(.025, .9, 'r={:.3f}, p={:.2g}'.format(r, pv),
@@ -96,7 +95,7 @@ def ScatterPlots_withR2(twoSamples_df, output, graph_title, log_scale, output_pa
     p.figure.savefig(output_path+"_Output/Plots/"+twoSamples_df.columns[0]+"_"+twoSamples_df.columns[1]+output, dpi=300)
     plt.close(p.figure)
 
-def ScatterPlot_ChangingSites(data, conditions, output):
+def ScatterPlot_ChangingSites(data, conditions, output, coverage):
     sns.set(rc={'figure.figsize':(7,7)})
     sns.set_theme(style="whitegrid")
     
@@ -108,20 +107,25 @@ def ScatterPlot_ChangingSites(data, conditions, output):
     else:
         col_palette = ["grey", "blue", "red"]
 
-    #Plotting:    
-    xy = sns.scatterplot(data=data, x=data.columns[6], hue = data["Status"],
+    #Plotting: 
+    
+    #Below, code to implement color by status. Not using this functionality for now. 
+    #xy = sns.scatterplot(data=data, x=data.columns[6], hue = data["Status"],
+    #                    y=data.columns[7],
+    #                    palette=col_palette)
+    
+    xy = sns.scatterplot(data=data, x=data.columns[6],
                         y=data.columns[7],
-                        palette=col_palette)
+                        color="blue")
     xy.plot([0,1],[0,1], 'black', linewidth=2, linestyle="dashed")
     xy.set(xlabel = conditions[0], ylabel = conditions[1])
-    #xy.set(xscale="log", yscale="log")
     xy.set_ylim(0,0.6)
     xy.set_xlim(0,0.6)
-    xy.set_title("Median (% Mod) - Replicable sites with Coverage>=50 in ALL samples")
+    xy.set_title("Median (% Mod) - Replicable sites with Coverage>="+coverage+" in ALL samples")
     xy.xaxis.set_major_formatter(mticker.ScalarFormatter())
     xy.yaxis.set_major_formatter(mticker.ScalarFormatter())
     
-    xy.figure.savefig(output+"_Output/Plots/"+conditions[0]+"_"+conditions[1]+"_ChangingStatus_ReplicablePeaks_AllCov_PeakBased.pdf", dpi=300)
+    xy.figure.savefig(output+"_Output/Plots/"+conditions[0]+"_"+conditions[1]+"_ChangingStatus_ReplicableSites.pdf", dpi=300)
     plt.close(xy.figure)
     
 def DensityPlots(ModFreq_data, output, file, labels, samples):
@@ -152,7 +156,7 @@ def DensityPlots(ModFreq_data, output, file, labels, samples):
     ax.figure.savefig(output+file, dpi=300)
     plt.close()
 
-def Barplots_ReplicableSites(total_sites, mod_AL1, mod_Both, samples_names, output):
+def Barplots_ReplicableSites(total_sites, mod_AL1, mod_Both, samples_names, output, coverage):
     
     #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
     x = ['Total sites', 'Modified in at least 1', 'Modified in all reps']
@@ -168,8 +172,8 @@ def Barplots_ReplicableSites(total_sites, mod_AL1, mod_Both, samples_names, outp
                        size=15, xytext=(0, 8),
                        textcoords='offset points')
         
-    a.set_title(samples_names[0]+" and "+samples_names[1]+ " - Replicable sites (Cov>=50 and ModFreq>=0.05)")
-    a.figure.savefig(output+"_Output/Plots/"+samples_names[0]+"_"+samples_names[1]+"_BarplotsReplicablePeaks_PeakBased.pdf", dpi=300)
+    a.set_title(samples_names[0]+" and "+samples_names[1]+ " - Replicable sites (Cov>="+coverage+" and ModFreq>=0.05)")
+    a.figure.savefig(output+"_Output/Plots/"+samples_names[0]+"_"+samples_names[1]+"_BarplotsReplicableSites.pdf", dpi=300)
     plt.close(a.figure)
     #plt.show()
 
@@ -254,7 +258,7 @@ def main():
 
     #Include genes with decay:
     if args.decay:
-        print('BE CAREFUL: Analysis will include all sites with cov>50 in at least one condition.')
+        print('BE CAREFUL: Analysis will include all sites with cov>='+str(args.coverage)+' in at least one condition.')
         groups = list()
         for ind_group in labels:
             if ind_group not in groups:
@@ -275,23 +279,23 @@ def main():
             
             
         peaks_cov_AllSamples = data_reps.drop_duplicates()
-        print("Total sites with coverage>50 in at least one condition: " + str(peaks_cov_AllSamples.shape[0]))
+        print("Total sites with coverage>="+str(args.coverage)+" in at least one condition: " + str(peaks_cov_AllSamples.shape[0]))
 
     else:
-        #Determine the number of sites with coverage>50 in ALL samples:
+        #Determine the number of sites with coverage>=args.coverage in ALL samples:
         peaks_cov_AllSamples = data.loc[(data.iloc[:,coverage]>=args.coverage).all(axis=1)]
-        print("Total sites with coverage>50 in ALL samples: " + str(peaks_cov_AllSamples.shape[0]))
+        print("Total sites with coverage>="+str(args.coverage)+" in ALL samples: " + str(peaks_cov_AllSamples.shape[0]))
 
     #Add metadata:
     peaks_cov_AllSamples["Site_ID"] = peaks_cov_AllSamples["chr"]+"_"+peaks_cov_AllSamples["pos"].astype("str")+"_"+peaks_cov_AllSamples["strand"]
     
 
-    #OUTPUT 1: Density plots with data from sites with cov>=50 in ALL samples:
+    #OUTPUT 1: Density plots with data from sites with cov>=args.coverage in ALL samples:
     #ModFreq density plot:
     ModFreq_data = pd.concat([peaks_cov_AllSamples.iloc[:,mod_freq], peaks_cov_AllSamples.iloc[:,-1]], axis=1)
     DensityPlots(ModFreq_data.iloc[:,:-1], args.output+"_Output/Plots/"+output, '_DensityPlots_ModFreq_CoverageBased.pdf', labels, samples)
 
-    #OUTPUT 2: VennDiagrams from modified sites identified in each individual sample + coverage>50 in ALL samples: 
+    #OUTPUT 2: VennDiagrams from modified sites identified in each individual sample + coverage>args.coverage: 
     sites_indSamples = dict()
 
     for s in range(0,ModFreq_data.shape[1]-1):
@@ -306,7 +310,7 @@ def main():
     for key in sites_indSamples.keys():
         print(key)
         
-    #OUTPUT 3: Scatter plots within replicates including data from sites with cov>=50 in ALL samples:
+    #OUTPUT 3: Scatter plots within replicates including data from sites with cov>=args.coverage:
     groups = list()
     for ind_group in labels:
         if ind_group not in groups:
@@ -323,23 +327,23 @@ def main():
         if args.decay:
             #Scatter plot ModFreq comparing replicates within the same condition (non-log scale):
             ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_ModFreq_CoverageBased.pdf", 
-                                "% Mod - Sites with coverage>50 in at least one condition", False, output)
+                                "% Mod - Sites with coverage>="+str(args.coverage)+" in at least one condition", False, output)
 
             #Scatter plot ModFreq comparing replicates within the same condition (log scale):
             ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
-                                "% Mod - Sites with coverage>50 in at least one condition", True, output)
+                                "% Mod - Sites with coverage>="+str(args.coverage)+" in at least one condition", True, output)
 
         else:
             #Scatter plot ModFreq comparing replicates within the same condition (non-log scale):
             ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_ModFreq_CoverageBased.pdf", 
-                                "% Mod - Sites with coverage>50 in all samples", False, output)
+                                "% Mod - Sites with coverage>="+str(args.coverage)+" in all samples", False, output)
 
             #Scatter plot ModFreq comparing replicates within the same condition (log scale):
             ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
-                                "% Mod - Sites with coverage>50 in all samples", True, output)
+                                "% Mod - Sites with coverage>="+str(args.coverage)+" in all samples", True, output)
 
     ##PEAK BASED ANALYSIS:
-    #OUTPUT 4: VennDiagrams of replicable peaks (cov>=25 + freq>=0.05) - including sites with cov>25 in all reps too
+    #OUTPUT 4: VennDiagrams of replicable peaks (cov>=args.coverage + freq>=0.05)
     site_id_idx = peaks_cov_AllSamples.shape[1]-1
     columns = list(range(0,5))
     replicable_per_condition = list()
@@ -391,9 +395,9 @@ def main():
         n_freq = peaks_modfreq_AllSamples_condition.shape[0]
 
         #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
-        Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names, output)
+        Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names, output, str(args.coverage))
         
-    #OUTPUT 5: VennDiagrams of replicable peaks (cov>=50 + freq>=0.05) across conditions:
+    #OUTPUT 5: VennDiagrams of replicable peaks (cov>=args.coverage + freq>=0.05) across conditions:
     #Plot the VennDiagram of replicable peaks across conditions: 
     replicable_sites_dict = dict()
     for count,condition in enumerate(conditions):
@@ -406,12 +410,10 @@ def main():
     replicable_sites = pd.merge(replicable_sites_coordinates, peaks_cov_AllSamples,
                                 on = ["Site_ID"],
                                 how = "inner")
-
+    
     #Calculate ModFreq median:
     for j in range(0, len(conditions)):           
         replicable_sites[conditions[j]+"_medianModFreq"] = replicable_sites.filter(like=conditions[j]).filter(like='_ModFreq').median(axis=1)
-
-
     
     #Calculate ModFreq differences and ratios between conditions:
     replicable_sites["ModFreq(Cond1-Cond2)"] = replicable_sites.filter(like="_medianModFreq").iloc[:,0] - replicable_sites.filter(like="_medianModFreq").iloc[:,1]
@@ -433,13 +435,13 @@ def main():
     replicable_sites["Status"] = status
 
     #Optional annotation of the replicable m6A sites with bed file provided by the user:
-    if args.bed_file is None:
+    if args.gtf_file is None:
         #Report replicable sites - all data:
-        replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+        replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicableSites.tsv", sep="\t", index=False)
 
         #Report replicable sites - summary of analysis:
         replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-5:]], axis=1)
-        replicable_sites_processed.to_csv(output+"_Output/Text_files/"+output+"_SummaryData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+        replicable_sites_processed.to_csv(output+"_Output/Text_files/"+output+"_SummaryData_ReplicableSites.tsv", sep="\t", index=False)
         
     else:
         bed_format = pd.concat([replicable_sites.iloc[:,1], replicable_sites.iloc[:,2], replicable_sites.iloc[:,2]+1, 
@@ -447,32 +449,37 @@ def main():
                        replicable_sites.iloc[:,4]], axis=1)
         
         a = pybedtools.BedTool.from_dataframe(bed_format)
-        b = pybedtools.BedTool(args.bed_file)
+        b = pybedtools.BedTool(args.gtf_file)
         
         #Intersection: 
-        #intersection = a.intersect(b, wb=True).to_dataframe().iloc[:,[3,9]]
-        intersection = a.intersect(b, wb=True).to_dataframe().iloc[:,[3,14]]
+        intersection = a.intersect(b, wb=True).to_dataframe().iloc[:,[3,8,14]]
         
-        #intersection.rename(columns={'name': 'Site_ID', 'blockCount': 'Gene'}, inplace=True)
-        intersection.columns = ["Site_ID", "Annotation"]
-        intersection["Gene"] = intersection["Annotation"].str.extract(r'\"(.*?)\"')
-        intersection.iloc[:,[0,2]]
+        #Filter out features that are not genes - analysis at per gene level: 
+        inter_filtered = intersection.loc[intersection.iloc[:,1]=="gene"]   
+        inter_filtered.columns = ["Site_ID", "Feature", "Annotation"]
+
+        #Extract gene ID and gene name:
+        inter_filtered["Gene"] = inter_filtered["Annotation"].str.extract(r'(?<=gene_id) \"(.*?)\"')
+        inter_filtered["Gene_name"] = inter_filtered["Annotation"].str.extract(r'(?<=gene_name) \"(.*?)\"')
+
+        #Merge the gene data for sites that overlap with two or more genes - thus, one line per unique site:
+        inter_final = inter_filtered.iloc[:,[0,3,4]].groupby("Site_ID").agg({'Site_ID' : 'first', 'Gene' : ','.join, 'Gene_name' : ','.join}).reset_index(drop=True)
 
         #Merge:
-        replicable_sites = pd.merge(replicable_sites , intersection.iloc[:,[0,2]],
+        replicable_sites = pd.merge(replicable_sites , inter_final,
                                     on = ["Site_ID"],
-                                    how = "outer").drop_duplicates(keep='first')    
-    
+                                    how = "inner").drop_duplicates(keep='first')    
+        
         #Report replicable sites - all data:
-        replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+        replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicableSites.tsv", sep="\t", index=False)
 
         #Report replicable sites - summary of analysis:
         replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-6:]], axis=1)
-        replicable_sites_processed.to_csv(output+"_Output/Text_files/"+output+"_SummaryData_ReplicablePeaks_AllCoverage_PeakBased.tsv", sep="\t", index=False)
+        replicable_sites_processed.to_csv(output+"_Output/Text_files/"+output+"_SummaryData_ReplicableSites.tsv", sep="\t", index=False)
 
     
     # OUTPUT 7: Scatter plot with changing sites (only sites with enough cov in all samples):
-    ScatterPlot_ChangingSites(replicable_sites_processed, conditions, output)
+    ScatterPlot_ChangingSites(replicable_sites_processed, conditions, output, str(args.coverage))
 
     ##OUTPUT 8: Motiff analysis with MEME:
     motifAnalysisMEME(replicable_sites, reference, output)
