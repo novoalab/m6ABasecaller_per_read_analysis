@@ -77,9 +77,9 @@ Expected output:
 <INCLUDE HERE IMAGE>
   
  
-### Citation
+## Citation
   
 If you find this work useful, please cite: XXX
   
-### Contact
+## Contact
 If you have any issues running this code, please go first over previous issues. If you still can't figure it out based on the prior responses/issues raised, please open a new issue in GitHub. Thanks!   
