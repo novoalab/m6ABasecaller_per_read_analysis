@@ -3,6 +3,8 @@
 The m6A basecaller allows to directly base-call RNA modifications from direct RNA sequencing nanopore raw FAST5 files. 
 
 
+< ADD IMAGE HERE -- Sonia has a very nice one>
+
 
 ## Table of contents
 MISSING
