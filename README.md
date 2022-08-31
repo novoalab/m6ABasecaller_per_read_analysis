@@ -77,12 +77,12 @@ TO FILL IN
 ```
 
 
-* Example 1: 
+* Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
 ```python
 python ./ModPhred_PostProcessing/ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed
 ```
 
-*  Example 2: changing the coverage threshold (default:50)
+*  Example 2: changing the coverage threshold (otherwise, default:50)
 ```python
 python ./ModPhred_PostProcessing/ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed -cov 30
 ```
