@@ -110,7 +110,9 @@ Expected output:
 Software | Version 
 --- | ---
 ModPhred | xxx
-
+venn | xxx
+pybedtools | xxx
+meme | xxx
  
 ## Citation
   
