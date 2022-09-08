@@ -172,9 +172,15 @@ def Barplots_ReplicableSites(total_sites, mod_AL1, mod_Both, samples_names, outp
                         bar.get_height()-2), ha='center', va='center',
                        size=15, xytext=(0, 8),
                        textcoords='offset points')
+
+    #Add graph title:
+    if len(samples_names)<=2: 
+        a.set_title(samples_names[0]+" and "+samples_names[1]+ " - Replicable sites (Cov>="+coverage+" and ModFreq>=0.05)")
+    else:
+        a.set_title(','.join(samples_names) +" - Replicable sites (Cov>="+coverage+" and ModFreq>=0.05)")
         
-    a.set_title(samples_names[0]+" and "+samples_names[1]+ " - Replicable sites (Cov>="+coverage+" and ModFreq>=0.05)")
-    a.figure.savefig(output+"_Output/Plots/"+samples_names[0]+"_"+samples_names[1]+"_BarplotsReplicableSites.pdf", dpi=300)
+    
+    a.figure.savefig(output+"_Output/Plots/"+'_'.join(samples_names) +"_BarplotsReplicableSites.pdf", dpi=300)
     plt.close(a.figure)
     #plt.show()
 
@@ -304,8 +310,13 @@ def main():
         ind_label = ModFreq_data.columns[s].replace("_ModFreq", "") + " - Modified sites: " + str(len(sites))
         sites_indSamples[ind_label] = sites
 
+    
     #VennDiagram (input, dataframe with IDs, labels, samples): 
-    VennDiagrams(sites_indSamples, args.output+"_Output/Plots/"+output+"_VennDiagram_ModifiedSitesPerSample_AllCoverage_CoverageBased")
+    #IMPORTANT: if there are more than 6 samples - no venn diagram will be produced - too messy:
+    if len(sites_indSamples.keys())<=6:
+        VennDiagrams(sites_indSamples, args.output+"_Output/Plots/"+output+"_VennDiagram_ModifiedSitesPerSample_AllCoverage_CoverageBased")
+    else:
+        print('No Venn Diagram with sites from individual samples is generated as the number of samples is higher than 6.')
 
     #Print the data to the user:
     for key in sites_indSamples.keys():
@@ -387,9 +398,9 @@ def main():
 
         peaks_modfreq_AllSamples_condition = reps.loc[(reps.iloc[:,mod_freq_rep]>=0.05).all(axis=1)]
         replicable_per_condition.append(peaks_modfreq_AllSamples_condition)
-
+        
         #In case there is only one rep per condition - do not generate the barplot with replicable sites between reps:
-        if reps.shape[1]==14:
+        if reps.shape[1]>=14:
             n_cov = reps.shape[0]
             
             #Identification of sites reported as modified (modfreq>=0.05) in at least one rep:
@@ -400,7 +411,7 @@ def main():
 
             inner_ncov = mergeLists(n_cov_singleSamples, "outer")
             n_freq = peaks_modfreq_AllSamples_condition.shape[0]
-
+            
             #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
             Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names, output, str(args.coverage))
         
