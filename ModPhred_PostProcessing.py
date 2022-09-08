@@ -14,6 +14,7 @@ import pybedtools
 import argparse
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.filterwarnings("ignore")
 pd.options.mode.chained_assignment = None  # default='warn'
 
 #Start input parser:
@@ -100,12 +101,12 @@ def ScatterPlot_ChangingSites(data, conditions, output, coverage):
     sns.set_theme(style="whitegrid")
     
     #Define the color palette to use:
-    if len(set(data["Status"]))==1:
-        col_palette = "grey"
-    elif len(set(data["Status"]))==2:
-        col_palette = ["blue", "grey"]
-    else:
-        col_palette = ["grey", "blue", "red"]
+    #if len(set(data["Status"]))==1:
+    #    col_palette = "grey"
+    #elif len(set(data["Status"]))==2:
+    #    col_palette = ["blue", "grey"]
+    #else:
+    #    col_palette = ["grey", "blue", "red"]
 
     #Plotting: 
     
@@ -114,14 +115,14 @@ def ScatterPlot_ChangingSites(data, conditions, output, coverage):
     #                    y=data.columns[7],
     #                    palette=col_palette)
     
-    xy = sns.scatterplot(data=data, x=data.columns[6],
-                        y=data.columns[7],
+    xy = sns.scatterplot(data=data, x=data.columns[0],
+                        y=data.columns[1],
                         color="blue")
     xy.plot([0,1],[0,1], 'black', linewidth=2, linestyle="dashed")
     xy.set(xlabel = conditions[0], ylabel = conditions[1])
     xy.set_ylim(0,0.6)
     xy.set_xlim(0,0.6)
-    xy.set_title("Median (% Mod) - Replicable sites with Coverage>="+coverage+" in ALL samples")
+    xy.set_title("Median (% Mod) - Replicable sites with Coverage>="+coverage)
     xy.xaxis.set_major_formatter(mticker.ScalarFormatter())
     xy.yaxis.set_major_formatter(mticker.ScalarFormatter())
     
@@ -324,26 +325,30 @@ def main():
             if label==n:
                 modFreq_reps.append(count)
         
-        if args.decay:
-            #Scatter plot ModFreq comparing replicates within the same condition (non-log scale):
-            ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_ModFreq_CoverageBased.pdf", 
-                                "% Mod - Sites with coverage>="+str(args.coverage)+" in at least one condition", False, output)
+        if len(modFreq_reps)>1:
+            if args.decay:
+                #Scatter plot ModFreq comparing replicates within the same condition (non-log scale):
+                ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_ModFreq_CoverageBased.pdf", 
+                                    "% Mod - Sites with coverage>="+str(args.coverage)+" in at least one condition", False, output)
 
-            #Scatter plot ModFreq comparing replicates within the same condition (log scale):
-            ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
-                                "% Mod - Sites with coverage>="+str(args.coverage)+" in at least one condition", True, output)
+                #Scatter plot ModFreq comparing replicates within the same condition (log scale):
+                ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
+                                    "% Mod - Sites with coverage>="+str(args.coverage)+" in at least one condition", True, output)
+
+            else:
+                #Scatter plot ModFreq comparing replicates within the same condition (non-log scale):
+                ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_ModFreq_CoverageBased.pdf", 
+                                    "% Mod - Sites with coverage>="+str(args.coverage)+" in all samples", False, output)
+
+                #Scatter plot ModFreq comparing replicates within the same condition (log scale):
+                ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
+                                    "% Mod - Sites with coverage>="+str(args.coverage)+" in all samples", True, output)
 
         else:
-            #Scatter plot ModFreq comparing replicates within the same condition (non-log scale):
-            ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_ModFreq_CoverageBased.pdf", 
-                                "% Mod - Sites with coverage>="+str(args.coverage)+" in all samples", False, output)
+            continue
 
-            #Scatter plot ModFreq comparing replicates within the same condition (log scale):
-            ScatterPlots_withR2(ModFreq_data.iloc[:,modFreq_reps], "_ScatterPlot_LogScale_ModFreq_CoverageBased.pdf", 
-                                "% Mod - Sites with coverage>="+str(args.coverage)+" in all samples", True, output)
-
-    ##PEAK BASED ANALYSIS:
-    #OUTPUT 4: VennDiagrams of replicable peaks (cov>=args.coverage + freq>=0.05)
+    ##SITE BASED ANALYSIS:
+    #OUTPUT 4: Barplots of replicable sites (cov>=args.coverage + freq>=0.05)
     site_id_idx = peaks_cov_AllSamples.shape[1]-1
     columns = list(range(0,5))
     replicable_per_condition = list()
@@ -383,27 +388,32 @@ def main():
         peaks_modfreq_AllSamples_condition = reps.loc[(reps.iloc[:,mod_freq_rep]>=0.05).all(axis=1)]
         replicable_per_condition.append(peaks_modfreq_AllSamples_condition)
 
-        n_cov = reps.shape[0]
+        #In case there is only one rep per condition - do not generate the barplot with replicable sites between reps:
+        if reps.shape[1]==14:
+            n_cov = reps.shape[0]
+            
+            #Identification of sites reported as modified (modfreq>=0.05) in at least one rep:
+            n_cov_singleSamples = list()
 
-        #Identification of sites reported as modified (modfreq>=0.05) in at least one rep:
-        n_cov_singleSamples = list()
+            for ss in range(0,len(mod_freq_rep)):
+                n_cov_singleSamples.append(reps.loc[(reps.iloc[:,mod_freq_rep[ss]]>=0.05)])
 
-        for ss in range(0,len(mod_freq_rep)):
-            n_cov_singleSamples.append(reps.loc[(reps.iloc[:,mod_freq_rep[ss]]>=0.05)])
+            inner_ncov = mergeLists(n_cov_singleSamples, "outer")
+            n_freq = peaks_modfreq_AllSamples_condition.shape[0]
 
-        inner_ncov = mergeLists(n_cov_singleSamples, "outer")
-        n_freq = peaks_modfreq_AllSamples_condition.shape[0]
-
-        #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
-        Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names, output, str(args.coverage))
+            #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
+            Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names, output, str(args.coverage))
+        
+        else:
+            print('Condition '+samples_names[0]+' only has one replicate. ALL SITES WILL BE CONSIDERED REPLICABLE IN THIS CONDITION. Barplot with replicable sites across replicates won\'t be generated.')
         
     #OUTPUT 5: VennDiagrams of replicable peaks (cov>=args.coverage + freq>=0.05) across conditions:
     #Plot the VennDiagram of replicable peaks across conditions: 
     replicable_sites_dict = dict()
     for count,condition in enumerate(conditions):
         replicable_sites_dict[condition] = set(replicable_per_condition[count].loc[:,"Site_ID"])
-
-    VennDiagrams(replicable_sites_dict, args.output+"_Output/Plots/"+output+"_VennDiagram_ReplicableSites_AcrossConditions_AllCoverage_PeakBased")
+    
+    VennDiagrams(replicable_sites_dict, args.output+"_Output/Plots/"+output+"_VennDiagram_ReplicableSites_AcrossConditions")
 
     #OUTPUT 6: Define changing sites across conditions and optional overlap with an annotation file provided by the user:
     replicable_sites_coordinates = mergeLists(replicable_per_condition, "outer").loc[:,"Site_ID"]
@@ -411,36 +421,45 @@ def main():
                                 on = ["Site_ID"],
                                 how = "inner")
     
+
     #Calculate ModFreq median:
     for j in range(0, len(conditions)):           
         replicable_sites[conditions[j]+"_medianModFreq"] = replicable_sites.filter(like=conditions[j]).filter(like='_ModFreq').median(axis=1)
     
-    #Calculate ModFreq differences and ratios between conditions:
-    replicable_sites["ModFreq(Cond1-Cond2)"] = replicable_sites.filter(like="_medianModFreq").iloc[:,0] - replicable_sites.filter(like="_medianModFreq").iloc[:,1]
-    replicable_sites["Ratio(Cond1/Cond2)"] = replicable_sites.filter(like="_medianModFreq").iloc[:,0]/replicable_sites.filter(like="_medianModFreq").iloc[:,1]
+    #Compare conditions in a pair-wise manner:
+    for c in range(1,replicable_sites.filter(like="_medianModFreq").shape[1]):
+        #Create labels for each individual comparison:
+        freq_comparison = "ModFreq("+conditions[0]+"-"+conditions[c]+")"
+        ratio_comparison = "Ratio("+conditions[0]+"/"+conditions[c]+")"
+        status_comparison = "Status("+conditions[0]+"-"+conditions[c]+")"
 
-    #Determine directionalities:
-    status = list()
-    for index,row in replicable_sites.iterrows():
-        diff_ModFreq = row["ModFreq(Cond1-Cond2)"]
-        ratio_ModFreq = row["Ratio(Cond1/Cond2)"]
+        #Calculate ModFreq differences and ratios between conditions:
+        replicable_sites[freq_comparison] = replicable_sites.filter(like="_medianModFreq").iloc[:,0] - replicable_sites.filter(like="_medianModFreq").iloc[:,c]
+        replicable_sites[ratio_comparison] = replicable_sites.filter(like="_medianModFreq").iloc[:,0]/replicable_sites.filter(like="_medianModFreq").iloc[:,c]
+        
+        #Determine directionalities:
+        status = list()
+        for index,row in replicable_sites.iterrows():
+            diff_ModFreq = row[freq_comparison]
+            ratio_ModFreq = row[ratio_comparison]
 
-        if (diff_ModFreq>=0.2 or ratio_ModFreq>=2):
-            status.append("Decreased upon "+conditions[1])
-        elif (diff_ModFreq<=(-0.2) or ratio_ModFreq<=0.5):
-            status.append("Increased upon "+conditions[1])
-        else:
-            status.append("No changes")
+            if (diff_ModFreq>=0.2 or ratio_ModFreq>=2):
+                status.append("Decreased upon "+conditions[c])
+            elif (diff_ModFreq<=(-0.2) or ratio_ModFreq<=0.5):
+                status.append("Increased upon "+conditions[c])
+            else:
+                status.append("No changes")
 
-    replicable_sites["Status"] = status
-
+        replicable_sites[status_comparison] = status
+    
     #Optional annotation of the replicable m6A sites with bed file provided by the user:
     if args.gtf_file is None:
         #Report replicable sites - all data:
         replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicableSites.tsv", sep="\t", index=False)
 
         #Report replicable sites - summary of analysis:
-        replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-5:]], axis=1)
+        number_summary_colums = len(conditions) + (3*(len(conditions)-1))
+        replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-number_summary_colums:]], axis=1)
         replicable_sites_processed.to_csv(output+"_Output/Text_files/"+output+"_SummaryData_ReplicableSites.tsv", sep="\t", index=False)
         
     else:
@@ -474,12 +493,15 @@ def main():
         replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicableSites.tsv", sep="\t", index=False)
 
         #Report replicable sites - summary of analysis:
-        replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-6:]], axis=1)
+        number_summary_colums = len(conditions) + (3*(len(conditions)-1) + 2)
+        replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-number_summary_colums:]], axis=1)
         replicable_sites_processed.to_csv(output+"_Output/Text_files/"+output+"_SummaryData_ReplicableSites.tsv", sep="\t", index=False)
 
     
     # OUTPUT 7: Scatter plot with changing sites (only sites with enough cov in all samples):
-    ScatterPlot_ChangingSites(replicable_sites_processed, conditions, output, str(args.coverage))
+    #Generate one scatter plot for every pair-wise comparison:
+    for c in range(1,len(conditions)):
+        ScatterPlot_ChangingSites(replicable_sites_processed.iloc[:,[6,6+c]], list([conditions[0], conditions[c]]), output, str(args.coverage))
 
     ##OUTPUT 8: Motiff analysis with MEME:
     motifAnalysisMEME(replicable_sites, reference, output)
