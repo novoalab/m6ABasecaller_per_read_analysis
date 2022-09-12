@@ -105,6 +105,30 @@ Expected output:
 
 <INCLUDE HERE IMAGE>
 
+### 3. Generating per-read level tables with m6A, polyA tail and isoform information
+
+#### 3.1. Parse results at per read level from the m6A basecaller:
+To proceed with this step, please download this [GitHub](https://github.com/biocorecrg/nanomod_map) repository. 
+- Usage:
+
+```bash
+python get_mods.py -i input.bam -o output.tsv -q 15 -c all -s yes
+
+awk '{sub(/True/, "-", $4)}1' output.tsv | awk '{sub(/False/, "+", $4)}1' - > output.strand.tsv
+```
+
+- Expected output: 
+```bash
+readname N_mod ref_name strand start end readlen alnlen is_secondary mod_list
+6c53fb4e-3deb-40dc-a23e-0321d969d2b5 1 chr1 - 4490932 4493594 2179 2175 False 4492362
+d12b1362-fd55-4374-b46b-8ad13a3741f3 0 chr1 - 4490943 4492005 1093 1065 False NA
+8613f34b-01cb-4c46-b419-f745147b28f1 1 chr1 - 4491371 4493583 1732 1705 False 4492352
+6b124dcc-a013-4a62-b620-f40a47366480 4 chr1 - 4491381 4493181 1217 1205 False 4491528,4492245,4492352,4492362
+```
+
+#### 3.2. Generate tables with m6A, polyA tail and isoform data:
+
+
 ## Dependencies and versions
 
 Software | Version 
@@ -113,7 +137,7 @@ ModPhred | xxx
 venn | xxx
 pybedtools | xxx
 meme | xxx
- 
+
 ## Citation
   
 If you find this work useful, please cite: XXX
