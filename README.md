@@ -100,10 +100,11 @@ python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 c
 ```bash
 Rscript Metagene_Plots.R -i Sample1.bed Sample2.bed -o Test -gtf Annotation.gtf -l Sample-1 Sample-2
 ```
+The bed file required as input has to contain 6 columns: chr, start, end, "m6A", a numeric value, strand
 
 Expected output:
 
-<INCLUDE HERE IMAGE>
+![image](https://user-images.githubusercontent.com/44866316/196667515-8d0993d9-249a-4f4f-bb5f-2233220a1bf4.png)
 
 ### 3. Generating per-read level tables with m6A, polyA tail and isoform information
 
