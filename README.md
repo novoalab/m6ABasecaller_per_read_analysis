@@ -40,7 +40,9 @@ Here we use the tool [ModPhred](https://github.com/novoalab/modPhred) to base-ca
 
 Usage: 
 ```
-TO FILL IN
+.~/src/modPhred/run -c rna_r9.4.1_70bps_m6A_hac.cfg --host /path-to/guppy_basecall_server -f reference.fa 
+-o modPhred/projectName -i folder_containing_fast5-condition1 folder_containing_fast5-condition2 
+
 ```
 
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred) repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
