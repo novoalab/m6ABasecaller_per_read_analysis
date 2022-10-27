@@ -40,8 +40,11 @@ Here we use the tool [ModPhred](https://github.com/novoalab/modPhred) to base-ca
 
 Usage: 
 ```
-.~/src/modPhred/run -c rna_r9.4.1_70bps_m6A_hac.cfg --host /path-to/guppy_basecall_server -f reference.fa 
--o modPhred/projectName -i folder_containing_fast5-condition1 folder_containing_fast5-condition2 
+-c: config for guppy, containing the m6A basecaller model. (for m6A basecaller: rna_r9.4.1_70bps_m6A_hac.cfg)
+--host: path to your guppy_basecall_server
+-f: your reference.fa file
+-o: path to output folder
+-i: path to input folders (containing the fast5 files). You can provide >=1 input folders
 
 ```
 
