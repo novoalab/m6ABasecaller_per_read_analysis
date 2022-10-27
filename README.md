@@ -97,6 +97,15 @@ python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 c
 
 #### 2.2. Generation of  metagene plots based on the results from the m6A basecaller:
 
+First, you'll need to install dependencies: 
+```bash
+R
+install.packages("argparse")
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("Guitar")
+```
+
 ```bash
 Rscript Metagene_Plots.R -i Sample1.bed Sample2.bed -o Test -gtf Annotation.gtf -l Sample-1 Sample-2
 ```
