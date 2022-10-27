@@ -10,7 +10,7 @@ The m6A basecaller allows to directly base-call RNA modifications from direct RN
 - [General Description](#General-description)
 - [Installation](#Installation)
 - [Running the code](#Running-the-code)
-	- [1. Running ModPhred with m6A basecalling model](#1-running-modphred-with-m6A-basecalling-model)
+	- [1. Basecalling with m6A basecalling model](#1-basecalling-with-m6A-basecalling-model)
 	- [2. Processing ModPhred output](#2-processing-modphred-output)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
@@ -33,9 +33,10 @@ Please follow the instructions on how to install modPhred [here](https://modphre
 
 ## Running the code
 
-### 1. Running ModPhred with m6A basecalling model (m6ABasecaller)
+### 1. Basecalling with m6A basecalling model (m6ABasecaller)
 
-ModPhred is a toolkit that can perform base-calling (via Guppy), storing RNA modification and mapping in a single command. The data is stored both in the FASTQ and BAM files. 
+#### a) Option 1 --  All-in-one step solution: Base-call, store modification information and map with ModPhred (recommended option)
+Here we use the tool [ModPhred](https://github.com/novoalab/modPhred) to base-call, encode m6A RNA modification and map the reads in a simple, and efficient manner, with a single command, making it very simple for the user to use alternative basecalling models.  ModPhred performs the base-calling step using Guppy. The data is stored both in the FASTQ and BAM files, in the QUALITY INFORMATION. 
 
 Usage: 
 ```
@@ -43,6 +44,15 @@ TO FILL IN
 ```
 
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred)repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
+
+#### b) Option 2 -- Base-call with Guppy 
+You may use this model standalone with Guppy, and then use megalodon or ModPhred to extract and process the RNA modification information. Please note that if you use megalodon, your RNA modification information will be encoded in the form of SAM tags. If you use ModPhred, your RNA modification information will be encoded in the quality of the FASTQ and BAM. (future version of ModPhred will allow to encode modification information directly in SAM tags). 
+
+Usage: 
+```
+TO FILL IN
+```
+
 
 ### 2. Processing ModPhred output
 
