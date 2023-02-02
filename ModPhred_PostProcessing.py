@@ -503,6 +503,16 @@ def main():
         #Report replicable sites - all data:
         replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicableSites.tsv", sep="\t", index=False)
 
+        #create a bedgraph with delta modfreq between the two conditions
+        modfreq = replicable_sites
+        modfreq['pos'] = modfreq['pos'] - 1
+        modfreq = modfreq.loc[:, ['chr', 'pos', 'pos', 'ModFreq(Cond1-Cond2)']]
+        
+        filename = output+"_Output/Text_files/"+output+"_DeltaModFreq.bedgraph"
+        with open(filename, "w", newline="") as fp:
+            fp.write("track type=bedGraph name=DeltaModFreq description=\"DeltaModFreq\" autoScale=on visibility=full color=200,100,0 altColor=0,100,200 priority=20 graphType=bar\n")
+            modfreq.to_csv(fp, sep="\t", index=False, header=False)
+        
         #Report replicable sites - summary of analysis:
         number_summary_colums = len(conditions) + (3*(len(conditions)-1) + 2)
         replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-number_summary_colums:]], axis=1)

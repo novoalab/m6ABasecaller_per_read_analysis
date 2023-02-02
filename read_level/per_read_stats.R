@@ -27,7 +27,6 @@ args <- parser$parse_args()
 ##Load input: 
 initial <- TRUE
 files <- args$input
-#files <- c("per_read_WT_2hpf_rep1.tsv", "per_read_WT_2hpf_rep2.tsv")
 
 #Parse one file at a time: 
 for (file in files){
@@ -36,13 +35,15 @@ for (file in files){
   sample_name <- str_match(file, "per_read_\\s*(.*?)\\s*.tsv")[2]
   
   #Load data from individual sample:
-  data <- read.table(file, header=T)
+  data <- read.table(file, header=T, stringsAsFactors = FALSE)
   
   ##Calculate stats: 
   #Number of m6A sites:
+  print(sample_name)
   mean_num_m6A_sites <- mean(data$num_m6a_sites)
   median_num_m6A_sites <- median(data$num_m6a_sites)
   sample_m6A_sites <- cbind(sample_name, data$num_m6a_sites)
+  
 
   #Median pA tail length: 
   median_nanpolish <- median(data$nanopolish, na.rm = T)
@@ -58,7 +59,7 @@ for (file in files){
   #Number of reads per gene:
   data$gene_id <- replace(data$gene_id, data$gene_id==".", NA)
   genes <- data %>% count(gene_id)
-  median_reads_per_gene <- median(genes$n)
+  #median_reads_per_gene <- median(genes$n)
   total_num_genes <- length(genes$gene_id)
   cov_num_genes <- nrow(subset(genes, n>=args$per_gene))
   per_cov_num_genes <- 100*(cov_num_genes/total_num_genes)
@@ -67,7 +68,7 @@ for (file in files){
   #Number of reads per isoform:
   data$isoform_id <- replace(data$isoform_id, data$isoform_id==".", NA)
   isoforms <- data %>% count(isoform_id)
-  median_reads_per_isoform <- median(isoforms$n)
+  #median_reads_per_isoform <- median(isoforms$n)
   total_num_isoforms <- length(isoforms$isoform_id)
   cov_num_isoforms <- nrow(subset(isoforms, n>=args$per_isoform))
   per_cov_num_isoforms <- 100*(cov_num_isoforms/total_num_isoforms)
@@ -76,17 +77,17 @@ for (file in files){
 
   ##Generate final table:
   sample_stats <- c(sample_name, round(mean_num_m6A_sites,2), median_num_m6A_sites, median_nanpolish, median_tailfindr, 
-                    total_num_genes, median_reads_per_gene, round(per_cov_num_genes,2), 
-                    total_num_isoforms, median_reads_per_isoform, round(per_cov_num_isoforms,2))
+                    total_num_genes, round(per_cov_num_genes,2), 
+                    total_num_isoforms, round(per_cov_num_isoforms,2))
   
   if (initial){
     #Stats:
     final_stats <- as.data.frame(rbind(sample_stats))
     colnames(final_stats) <- c("Sample", "Mean m6A sites per read", "Median m6A sites per read",
                                "Median pA length by Nanopolish (bp)", "Median pA length by Tailfindr (bp)",
-                               "Total number of genes", "Median number of reads per gene", 
+                               "Total number of genes", 
                                paste("Number of genes with counts >= ", args$per_gene, " (%)",sep=""),
-                               "Total number of isoforms", "Median number of reads per isoform",
+                               "Total number of isoforms", 
                                paste("Number of isoforms with counts >= ", args$per_isoform, " (%)",sep="")) 
     initial <- FALSE
     
@@ -132,47 +133,71 @@ write.table(final_stats, paste(args$output,"_per_read_stats.tsv",sep=""), sep="\
 
 ##Plotting violin plots for the different features:
 data_m6A_sites$V2 <- factor(data_m6A_sites$V2, levels=c("0","1","2","3","4"))
-data_m6A_sites$V2[data_m6A_sites$V2=="NA"] <- "5+"
+data_m6A_sites$V2[is.na(data_m6A_sites$V2)] <- "5+"
 pdf(paste(args$output,'_m6A_sites_per_read.pdf',sep=""),height=5,width=14,onefile=FALSE)
 plt_violin_base <- ggplot(data_m6A_sites, aes(x=V2)) +
-  geom_histogram(binwidth=1, stat="count") +
+  geom_histogram(stat="count") +
   xlab('m6A sites per read') +
   ylab('Counts') +
-  theme_classic(base_size=13)+
+  theme_classic(base_size=13) + 
   facet_grid(~ sample_name)
 
 plt_violin_base
 dev.off()
 
+#Nanopolish:
 data_nanopolish$V2 <- as.numeric(data_nanopolish$V2)
+
+#Only include non-NA data:
+counts_nanopolish <- 
+  data_nanopolish[!is.na(data_nanopolish),] %>% count(sample_name)
+
+median_nanopolish <- final_stats[,c(1,4)]
+colnames(median_nanopolish) <- c('sample', 'med')
+
 pdf(paste(args$output,'_pA_Nanopolish.pdf',sep=""),height=5,width=14,onefile=FALSE)
 plt_violin_base <- ggplot(data_nanopolish, aes(x=sample_name, y=V2)) +
   geom_violin(trim=TRUE)+
   geom_boxplot(width=0.1, fill="white")+
   ylab('PolyA tail length (bp)') + xlab("")+
-  theme_classic(base_size=13)
+  ggtitle("PolyA tail length estimation by Nanopolish") + theme_classic(base_size=15) +
+  geom_text(data=counts_nanopolish, aes(x=sample_name, y=-20, label=paste('n=',n,sep="")), size=4) +
+  geom_text(data=median_nanopolish, aes(x=sample, y=as.numeric(med)+15, label=med), size=4) +
+  theme(legend.position = "none")
 
 plt_violin_base
 dev.off()
 
+#Tailfindr:
 data_tailfindr$V2 <- as.numeric(data_tailfindr$V2)
+
+#Only include non-NA data: 
+counts_tailfindr <- 
+  data_tailfindr[!is.na(data_tailfindr),] %>% count(sample_name)
+
+median_tailfindr <- final_stats[,c(1,5)]
+colnames(median_tailfindr) <- c('sample', 'med')
+
 pdf(paste(args$output,'_pA_Tailfindr.pdf',sep=""),height=5,width=14,onefile=FALSE)
 plt_violin_base <- ggplot(data_tailfindr, aes(x=sample_name, y=V2)) +
   geom_violin(trim=TRUE)+
   geom_boxplot(width=0.1, fill="white")+
   ylab('PolyA tail length (bp)') + xlab("")+
-  theme_classic(base_size=13)
-
+  ggtitle("PolyA tail length estimation by Tailfindr") + theme_classic(base_size=15) +
+  geom_text(data=counts_tailfindr, aes(x=sample_name, y=-20, label=paste('n=',n,sep="")), size=4) +
+  geom_text(data=median_tailfindr, aes(x=sample, y=as.numeric(med)+20, label=med), size=4) +
+  theme(legend.position = "none")
 plt_violin_base
 dev.off()
 
+#Reads per gene - log scale:
 data_reads_per_gene$V2 <- as.numeric(data_reads_per_gene$V2)
 pdf(paste(args$output,'_reads_per_gene.pdf',sep=""),height=5,width=14,onefile=FALSE)
 plt_violin_base <- ggplot(data_reads_per_gene, aes(x=sample_name, y=V2)) +
   geom_violin(trim=FALSE)+
   geom_boxplot(width=0.1, fill="white")+
-  ylab('Reads per gene') + xlab("")+
-  theme_classic(base_size=13)
+  ylab('Log10(Reads per gene)') + xlab("") + scale_y_log10() +
+  theme_classic(base_size=15)
 
 plt_violin_base
 dev.off()
