@@ -29,6 +29,9 @@ parser.add_argument("-l", "--labels", nargs="+", help="Group in which the sample
 parser.add_argument("-gtf", "--gtf_file", default=None, help="Gtf file with genes to annotate the replicable m6A sites (*.gtf).")
 parser.add_argument("-decay", "--decay", action="store_true", help="Include genes that have enough coverage in at least one condition.")
 parser.add_argument("-cov", "--coverage", default=50, type=int, help="Coverage threshold to use in the analysis.")
+parser.add_argument("-modf", "--mod_freq", default=0.05, type=float, help="Modification frequency threshold to use in the analysis.")
+parser.add_argument("-transcriptome", "--transcriptome", action="store_true", help="Transcriptome analysis - remove sites in the negative strand.")
+
 
 #Read arguments from the command line
 args = parser.parse_args()
@@ -157,7 +160,7 @@ def DensityPlots(ModFreq_data, output, file, labels, samples):
     ax.figure.savefig(output+file, dpi=300)
     plt.close()
 
-def Barplots_ReplicableSites(total_sites, mod_AL1, mod_Both, samples_names, output, coverage):
+def Barplots_ReplicableSites(total_sites, mod_AL1, mod_Both, samples_names, output, coverage, mod_freq_threshold):
     
     #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
     x = ['Total sites', 'Modified in at least 1', 'Modified in all reps']
@@ -175,9 +178,9 @@ def Barplots_ReplicableSites(total_sites, mod_AL1, mod_Both, samples_names, outp
 
     #Add graph title:
     if len(samples_names)<=2: 
-        a.set_title(samples_names[0]+" and "+samples_names[1]+ " - Replicable sites (Cov>="+coverage+" and ModFreq>=0.05)")
+        a.set_title(samples_names[0]+" and "+samples_names[1]+ " - Replicable sites (Cov>="+coverage+" and ModFreq>="+mod_freq_threshold+")")
     else:
-        a.set_title(','.join(samples_names) +" - Replicable sites (Cov>="+coverage+" and ModFreq>=0.05)")
+        a.set_title(','.join(samples_names) +" - Replicable sites (Cov>="+coverage+" and ModFreq>="+mod_freq_threshold+")")
         
     
     a.figure.savefig(output+"_Output/Plots/"+'_'.join(samples_names) +"_BarplotsReplicableSites.pdf", dpi=300)
@@ -194,11 +197,15 @@ def mergeLists(list_toMerge, type_merge):
     return(mergedList)
 
 
-def extractColumnData(data, initial_column, non_processed):
+def extractColumnData(data, initial_column, non_processed, transcriptome):
     column_list = list()
     n_reps = int((data.shape[1]-5)/4)
     initial = True
-    
+
+    #If transcriptome, filter negative strand results as we only expect positive strand sites to be TP:
+    if transcriptome:
+        data = data[data.iloc[:,3]=="+"]
+
     if n_reps>1:
         for i in range(0,n_reps):
             if initial: 
@@ -242,6 +249,7 @@ def main():
     conditions = args.conditions
     output = args.output
     reference = args.reference
+    mod_freq_threshold = args.mod_freq
     
     data = InputCheck_Preprocessing(input_data, labels, samples, conditions)
     
@@ -260,8 +268,8 @@ def main():
     
     ##COVERAGE BASED ANALYSIS:
     #Extract coverage and mod_freq information:
-    coverage = extractColumnData(data, 5, True)
-    mod_freq = extractColumnData(data, 7, True)
+    coverage = extractColumnData(data, 5, True, args.transcriptome)
+    mod_freq = extractColumnData(data, 7, True, args.transcriptome)
 
     #Include genes with decay:
     if args.decay:
@@ -306,7 +314,7 @@ def main():
     sites_indSamples = dict()
 
     for s in range(0,ModFreq_data.shape[1]-1):
-        sites = set(ModFreq_data.loc[ModFreq_data.iloc[:,s] >= 0.05,"Site_ID"])
+        sites = set(ModFreq_data.loc[ModFreq_data.iloc[:,s] >= mod_freq_threshold,"Site_ID"])
         ind_label = ModFreq_data.columns[s].replace("_ModFreq", "") + " - Modified sites: " + str(len(sites))
         sites_indSamples[ind_label] = sites
 
@@ -359,7 +367,7 @@ def main():
             continue
 
     ##SITE BASED ANALYSIS:
-    #OUTPUT 4: Barplots of replicable sites (cov>=args.coverage + freq>=0.05)
+    #OUTPUT 4: Barplots of replicable sites (cov>=args.coverage + freq>=mod_freq_threshold)
     site_id_idx = peaks_cov_AllSamples.shape[1]-1
     columns = list(range(0,5))
     replicable_per_condition = list()
@@ -393,32 +401,32 @@ def main():
         reps = mergeLists(replicates_data, "outer")
 
         #Extract coverage columns:
-        coverage_rep = extractColumnData(reps, 5, False)
-        mod_freq_rep = extractColumnData(reps, 7, False)
+        coverage_rep = extractColumnData(reps, 5, False, args.transcriptome)
+        mod_freq_rep = extractColumnData(reps, 7, False, args.transcriptome)
 
-        peaks_modfreq_AllSamples_condition = reps.loc[(reps.iloc[:,mod_freq_rep]>=0.05).all(axis=1)]
+        peaks_modfreq_AllSamples_condition = reps.loc[(reps.iloc[:,mod_freq_rep]>=mod_freq_threshold).all(axis=1)]
         replicable_per_condition.append(peaks_modfreq_AllSamples_condition)
         
         #In case there is only one rep per condition - do not generate the barplot with replicable sites between reps:
         if reps.shape[1]>=14:
             n_cov = reps.shape[0]
             
-            #Identification of sites reported as modified (modfreq>=0.05) in at least one rep:
+            #Identification of sites reported as modified (modfreq>=mod_freq_threshold) in at least one rep:
             n_cov_singleSamples = list()
 
             for ss in range(0,len(mod_freq_rep)):
-                n_cov_singleSamples.append(reps.loc[(reps.iloc[:,mod_freq_rep[ss]]>=0.05)])
+                n_cov_singleSamples.append(reps.loc[(reps.iloc[:,mod_freq_rep[ss]]>=mod_freq_threshold)])
 
             inner_ncov = mergeLists(n_cov_singleSamples, "outer")
             n_freq = peaks_modfreq_AllSamples_condition.shape[0]
             
             #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
-            Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names, output, str(args.coverage))
+            Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names, output, str(args.coverage), str(mod_freq_threshold))
         
         else:
             print('Condition '+samples_names[0]+' only has one replicate. ALL SITES WILL BE CONSIDERED REPLICABLE IN THIS CONDITION. Barplot with replicable sites across replicates won\'t be generated.')
         
-    #OUTPUT 5: VennDiagrams of replicable peaks (cov>=args.coverage + freq>=0.05) across conditions:
+    #OUTPUT 5: VennDiagrams of replicable peaks (cov>=args.coverage + freq>=mod_freq_threshold) across conditions:
     #Plot the VennDiagram of replicable peaks across conditions: 
     replicable_sites_dict = dict()
     for count,condition in enumerate(conditions):
@@ -503,10 +511,10 @@ def main():
         #Report replicable sites - all data:
         replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicableSites.tsv", sep="\t", index=False)
 
-        #create a bedgraph with delta modfreq between the two conditions
+        #Create a bedgraph with delta modfreq between the two conditions
         modfreq = replicable_sites
         modfreq['pos'] = modfreq['pos'] - 1
-        modfreq = modfreq.loc[:, ['chr', 'pos', 'pos', 'ModFreq(Cond1-Cond2)']]
+        modfreq = modfreq.loc[:, ['chr', 'pos', 'pos', 'ModFreq('+conditions[0]+'-'+conditions[c]+')']]
         
         filename = output+"_Output/Text_files/"+output+"_DeltaModFreq.bedgraph"
         with open(filename, "w", newline="") as fp:
