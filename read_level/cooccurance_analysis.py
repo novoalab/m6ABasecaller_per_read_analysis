@@ -10,6 +10,7 @@ import math
 import argparse
 import seaborn as sns
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 #Additional functions:
 def parse_data (input_data,min_coverage):
@@ -27,10 +28,11 @@ def parse_data (input_data,min_coverage):
 
     return(transcript_coverage)
 
-def calculate_frequencies(transcript_data,transcript_id,min_expected):
+def calculate_frequencies(transcript_data,transcript_id,min_expected,total_counts):
     
     #Extract all individual m6A positions: 
     sites = transcript_data.str.split(',',expand=True)
+    
     m6A_sites = list()
     for col in range(0, sites.shape[1]):
         m6A_sites.append(sites.iloc[:,col].dropna().unique().tolist())
@@ -38,17 +40,15 @@ def calculate_frequencies(transcript_data,transcript_id,min_expected):
     m6A_sites = set(list(itertools.chain.from_iterable(m6A_sites))) 
 
     #Calculate the frequency (stoichiometries) for each individual site: 
-    counts = dict()
+    counts = defaultdict(lambda:1)
 
     #Loop over and get the site counts:
     for site in m6A_sites:
         for line in range(0,sites.shape[0]):
             sites_per_read = sites.iloc[line,:].tolist()
-
+            
             #Update dictionary for individual frequencies (pA and pB):
-            if site not in counts and site in sites_per_read:
-                counts[site] =1
-            elif site in sites_per_read:
+            if site in sites_per_read:
                 counts[site] +=1
 
     '''
@@ -65,6 +65,7 @@ def calculate_frequencies(transcript_data,transcript_id,min_expected):
     #Update the m6A sites list - only including those with enough stoichiometry:
     m6A_sites = list(counts.keys())
     '''
+
     #Only continue if there are 2 or more m6A sites in the transcript:
     if len(m6A_sites)>1:
         #Generate all possible pair-wise comparisons:
@@ -77,11 +78,11 @@ def calculate_frequencies(transcript_data,transcript_id,min_expected):
             comparison = '{}-{}'.format(comp[0], comp[1])
             
             #Calculate frequency for individual sites:
-            freq_A = counts[comp[0]]/sites.shape[0]
-            freq_B = counts[comp[1]]/sites.shape[0]
+            freq_A = counts[comp[0]]/total_counts
+            freq_B = counts[comp[1]]/total_counts
 
             #Apply min_expected counts threshold:
-            counts_expected = freq_A*freq_B*sites.shape[0]
+            counts_expected = freq_A*freq_B*total_counts
             
             if counts_expected >= min_expected:
                 print('Processing: '+ comparison)
@@ -119,24 +120,6 @@ def calculate_frequencies(transcript_data,transcript_id,min_expected):
 
     return(final_data)
 
-def DensityPlots(sd_data, output, coverage, min_expected):
-    sns.set(rc={'figure.figsize':(11,8)})
-    sns.set_theme(style="whitegrid")
-    c = sns.color_palette("tab10")[0]
-
-    #Create label: log_scale=True, , linewidth = 3
-    ind_label = '{} (n={})'.format(output, sd_data.shape[0])
-    plt_title = 'Co-ocurance analysis - Coverage threshold = {} - Min.expected counts threshold = {}'.format(coverage, min_expected)
-    ax = sns.kdeplot(data=sd_data, x=(sd_data.iloc[:,9]), color = c, label=ind_label)
-
-    ax.legend(loc='upper right', fontsize=15, frameon=False)
-    ax.set_title(plt_title)
-    ax.set_xlabel('Standard deviation from expected', fontsize=16)
-    ax.set_ylabel('Density', fontsize=16)
-    ax.tick_params(labelsize=14)
-    ax.figure.savefig('{}_DensityPlot_CoocuranceAnalysis.pdf'.format(args.output), dpi=300)
-    plt.close()
-
 #Start input parser:
 parser = argparse.ArgumentParser()
 
@@ -158,19 +141,24 @@ for ind_transcript in transcripts_to_analyse:
     
     #Perform calculations on reads belonging to the same transcript:
     print('-- Analysing transcript: {} ---'.format(ind_transcript))
-    results = calculate_frequencies(input_data.loc[input_data['isoform_id']==ind_transcript,'pos_m6A_sites'],ind_transcript, args.min_expected)
+    
+    #Subset data per transcript:
+    transcript_subset = input_data.loc[input_data['isoform_id']==ind_transcript,'pos_m6A_sites']
+    #print(transcript_subset.dropna(axis = 0, how = 'all'))
+    if transcript_subset is not None:
+        results = calculate_frequencies(transcript_subset.dropna(axis = 0, how = 'all'),ind_transcript, args.min_expected, transcript_subset.shape[0])
 
-    if type(results)==str:
-        continue
-    elif type(coocurance_data)==str and type(results)!=str:
-        coocurance_data = results
-    elif type(coocurance_data)!=str and type(results)!=str:
-        coocurance_data = pd.concat([coocurance_data,results])
+        if type(results)==str:
+            continue
+        elif type(coocurance_data)==str and type(results)!=str:
+            coocurance_data = results
+        elif type(coocurance_data)!=str and type(results)!=str:
+            coocurance_data = pd.concat([coocurance_data,results])
+    else:
+        print('Transcript without m6A sites.')
 
 coocurance_data.columns = ['Transcript','Site A','Site B', 'Transcript_counts','FreqA','FreqB', 'obs_FreqAB', 'exp_FreqAB','SdFromExpected']
 
 #Output results in a tsv file:
 coocurance_data.to_csv('{}_CoocuranceAnalysis.tsv'.format(args.output), sep='\t', index=False)
 
-#Plot the distribution of the sd_from_expected values:
-DensityPlots(coocurance_data.reset_index(), args.output, args.coverage, args.min_expected)
