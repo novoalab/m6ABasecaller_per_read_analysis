@@ -118,17 +118,29 @@ def ScatterPlot_ChangingSites(data, conditions, output, coverage):
     #                    y=data.columns[7],
     #                    palette=col_palette)
     
+    #Density:
+    values = np.vstack([data.iloc[:,0], data.iloc[:,1]])
+    kernel = sp.stats.gaussian_kde(values)(values)
+
+    #Scatterplot:
     xy = sns.scatterplot(data=data, x=data.columns[0],
                         y=data.columns[1],
-                        color="blue")
+                        c=kernel,
+                        cmap=sns.color_palette("ch:start=.2,rot=-.3", as_cmap=True))
     xy.plot([0,1],[0,1], 'black', linewidth=2, linestyle="dashed")
     xy.set(xlabel = conditions[0], ylabel = conditions[1])
     xy.set_ylim(0,0.6)
     xy.set_xlim(0,0.6)
-    xy.set_title("Median (% Mod) - Replicable sites with Coverage>="+coverage)
+    xy.set_title("Median (% Mod) - Replicable sites with Coverage>="+coverage+" (n="+str(data.shape[0])+")")
     xy.xaxis.set_major_formatter(mticker.ScalarFormatter())
     xy.yaxis.set_major_formatter(mticker.ScalarFormatter())
     
+    #Calculate spearman:
+    res = sp.stats.spearmanr(data.iloc[:,0], data.iloc[:,1])
+    ax = plt.gca()
+    ax.text(.025, .95, '{}={:.3f}'.format(r"$\rho$", res.correlation),
+            transform=ax.transAxes)
+
     xy.figure.savefig(output+"_Output/Plots/"+conditions[0]+"_"+conditions[1]+"_ChangingStatus_ReplicableSites.pdf", dpi=300)
     plt.close(xy.figure)
     
