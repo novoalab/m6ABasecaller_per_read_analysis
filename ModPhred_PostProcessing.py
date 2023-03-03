@@ -444,7 +444,11 @@ def main():
     for count,condition in enumerate(conditions):
         replicable_sites_dict[condition] = set(replicable_per_condition[count].loc[:,"Site_ID"])
     
-    VennDiagrams(replicable_sites_dict, args.output+"_Output/Plots/"+output+"_VennDiagram_ReplicableSites_AcrossConditions")
+    #Only output the VennDiagram if there are 6 conditions or less:
+    if len(conditions)<=6:
+        VennDiagrams(replicable_sites_dict, args.output+"_Output/Plots/"+output+"_VennDiagram_ReplicableSites_AcrossConditions")
+    else:
+        print('No Venn Diagram comparing sites across conditions is generated as the number of conditions is higher than 6.')        
 
     #OUTPUT 6: Define changing sites across conditions and optional overlap with an annotation file provided by the user:
     replicable_sites_coordinates = mergeLists(replicable_per_condition, "outer").loc[:,"Site_ID"]
