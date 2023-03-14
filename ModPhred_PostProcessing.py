@@ -546,7 +546,7 @@ def main():
     # OUTPUT 7: Scatter plot with changing sites (only sites with enough cov in all samples):
     #Generate one scatter plot for every pair-wise comparison:
     for c in range(1,len(conditions)):
-        ScatterPlot_ChangingSites(replicable_sites_processed.iloc[:,[6,6+c]], list([conditions[0], conditions[c]]), output, str(args.coverage))
+        ScatterPlot_ChangingSites(replicable_sites_processed.iloc[:,[6,6+c]].dropna(), list([conditions[0], conditions[c]]), output, str(args.coverage))
 
     ##OUTPUT 8: Motiff analysis with MEME:
     motifAnalysisMEME(replicable_sites, reference, output)
