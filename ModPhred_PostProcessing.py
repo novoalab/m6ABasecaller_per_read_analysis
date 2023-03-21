@@ -119,14 +119,22 @@ def ScatterPlot_ChangingSites(data, conditions, output, coverage):
     #                    palette=col_palette)
     
     #Density:
-    values = np.vstack([data.iloc[:,0], data.iloc[:,1]])
-    kernel = sp.stats.gaussian_kde(values)(values)
+    if data.shape[0]>=5:
+        values = np.vstack([data.iloc[:,0], data.iloc[:,1]])
+        kernel = sp.stats.gaussian_kde(values)(values)
 
-    #Scatterplot:
-    xy = sns.scatterplot(data=data, x=data.columns[0],
-                        y=data.columns[1],
-                        c=kernel,
-                        cmap=sns.color_palette("ch:start=.2,rot=-.3", as_cmap=True))
+        #Scatterplot:
+        xy = sns.scatterplot(data=data, x=data.columns[0],
+                            y=data.columns[1],
+                            c=kernel,
+                            cmap=sns.color_palette("ch:start=.2,rot=-.3", as_cmap=True))
+    else:
+        #Scatterplot:
+        xy = sns.scatterplot(data=data, x=data.columns[0],
+                            y=data.columns[1],
+                            cmap=sns.color_palette("ch:start=.2,rot=-.3", as_cmap=True))
+    
+    #Add headers and labels:
     xy.plot([0,1],[0,1], 'black', linewidth=2, linestyle="dashed")
     xy.set(xlabel = conditions[0], ylabel = conditions[1])
     xy.set_ylim(0,0.6)
@@ -431,19 +439,19 @@ def main():
 
             inner_ncov = mergeLists(n_cov_singleSamples, "outer")
             n_freq = peaks_modfreq_AllSamples_condition.shape[0]
-            
+
             #Barplots of the total sites, sites modified in at least one rep, sites modified in all reps:
             Barplots_ReplicableSites(n_cov, inner_ncov.shape[0], n_freq, samples_names, output, str(args.coverage), str(mod_freq_threshold))
         
         else:
-            print('Condition '+samples_names[0]+' only has one replicate. ALL SITES WILL BE CONSIDERED REPLICABLE IN THIS CONDITION. Barplot with replicable sites across replicates won\'t be generated.')
-        
+            print('Condition '+samples_names[0]+' only has one replicate. ALL SITES WILL BE CONSIDERED REPLICABLE IN THIS CONDITION. Barplot with replicable sites across replicates won\'t be generated.')       
+
     #OUTPUT 5: VennDiagrams of replicable peaks (cov>=args.coverage + freq>=mod_freq_threshold) across conditions:
     #Plot the VennDiagram of replicable peaks across conditions: 
     replicable_sites_dict = dict()
     for count,condition in enumerate(conditions):
         replicable_sites_dict[condition] = set(replicable_per_condition[count].loc[:,"Site_ID"])
-    
+    print(replicable_per_condition)
     #Only output the VennDiagram if there are 6 conditions or less:
     if len(conditions)<=6:
         VennDiagrams(replicable_sites_dict, args.output+"_Output/Plots/"+output+"_VennDiagram_ReplicableSites_AcrossConditions")
@@ -486,7 +494,7 @@ def main():
                 status.append("No changes")
 
         replicable_sites[status_comparison] = status
-    
+        
     #Optional annotation of the replicable m6A sites with bed file provided by the user:
     if args.gtf_file is None:
         #Report replicable sites - all data:
@@ -506,8 +514,8 @@ def main():
         b = pybedtools.BedTool(args.gtf_file)
         
         #Intersection: 
-        intersection = a.intersect(b, wb=True).to_dataframe().iloc[:,[3,8,14]]
-        
+        intersection = a.intersect(b, wb=True).to_dataframe(header=None).iloc[:,[3,8,14]]
+
         #Filter out features that are not genes - analysis at per gene level: 
         inter_filtered = intersection.loc[intersection.iloc[:,1]=="gene"]   
         inter_filtered.columns = ["Site_ID", "Feature", "Annotation"]
@@ -521,9 +529,9 @@ def main():
 
         #Merge:
         replicable_sites = pd.merge(replicable_sites , inter_final,
-                                    on = ["Site_ID"],
-                                    how = "inner").drop_duplicates(keep='first')    
-        
+                                        on = ["Site_ID"],
+                                        how = "inner").drop_duplicates(keep='first')    
+
         #Report replicable sites - all data:
         replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicableSites.tsv", sep="\t", index=False)
 
