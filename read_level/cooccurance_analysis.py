@@ -8,25 +8,26 @@ import numpy as np
 import itertools
 import math
 import argparse
+import statistics
 import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import defaultdict
 
 #Additional functions:
 def parse_data (input_data,min_coverage):
-    #Only include reads that were uniquely assigned:
-    uniquely_assigned = input_data.loc[input_data.iloc[:,4]=="unique"]
-    
+    #Only include reads that were uniquely assigned and full-length:
+    uniquely_assigned = input_data.loc[(input_data.iloc[:,4]=="unique") & ((input_data.iloc[:,5]=="fsm") | (input_data.iloc[:,5]=="mono_exon_match"))]
+
     #Extract transcript IDs with coverage>=args.coverage:
     transcript_counts = uniquely_assigned['isoform_id'].value_counts()
     transcript_coverage = transcript_counts[transcript_counts>=min_coverage].index.tolist()
 
     #Print summary to stout:
     print('-- Transcript selection summary --')
-    print('Total number of transcripts with uniquely assigned reads: {}'.format(len(transcript_counts)))
-    print('Total number of transcripts with uniquely assigned reads>={}: {}'.format(min_coverage, len(transcript_coverage)))
+    print('Total number of transcripts with uniquely assigned and full-length reads: {}'.format(len(transcript_counts)))
+    print('Total number of transcripts with uniquely assigned and full-length reads>={}: {}'.format(min_coverage, len(transcript_coverage)))
 
-    return(transcript_coverage)
+    return(transcript_coverage, uniquely_assigned)
 
 def calculate_frequencies(transcript_data,transcript_id,min_expected,total_counts):
     
@@ -132,8 +133,8 @@ parser.add_argument("-min_exp", "--min_expected", default=2, type=int, help="Min
 args = parser.parse_args()
 
 #Read the data:
-input_data = pd.read_table(args.input, usecols=['read_id', 'chr', 'pos_m6A_sites', 'isoform_id', 'assignment_type'])
-transcripts_to_analyse = parse_data(input_data, args.coverage)
+input_data = pd.read_table(args.input, usecols=['read_id', 'chr', 'pos_m6A_sites', 'isoform_id', 'assignment_type', 'assignment_data'])
+transcripts_to_analyse, parsed_data = parse_data(input_data, args.coverage)
 
 #Extract reads from transcripts with coverage>=args.coverage:
 coocurance_data = ""
@@ -143,9 +144,10 @@ for ind_transcript in transcripts_to_analyse:
     print('-- Analysing transcript: {} ---'.format(ind_transcript))
     
     #Subset data per transcript:
-    transcript_subset = input_data.loc[input_data['isoform_id']==ind_transcript,'pos_m6A_sites']
-    #print(transcript_subset.dropna(axis = 0, how = 'all'))
+    transcript_subset = parsed_data.loc[parsed_data['isoform_id']==ind_transcript, 'pos_m6A_sites']
+    
     if transcript_subset is not None:
+        
         results = calculate_frequencies(transcript_subset.dropna(axis = 0, how = 'all'),ind_transcript, args.min_expected, transcript_subset.shape[0])
 
         if type(results)==str:
