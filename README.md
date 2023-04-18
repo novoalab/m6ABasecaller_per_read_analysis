@@ -118,6 +118,7 @@ Note: the program does not require a matching number of replicates per condition
 
 - Bedgraph with modification frequency difference between condition 1 (reference) and condition 2 per m6A position
 
+### 3. Processing ModPhred output: examples
 
 * Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
 ```python
@@ -155,9 +156,9 @@ Expected output:
 
 ![image](https://user-images.githubusercontent.com/44866316/196667515-8d0993d9-249a-4f4f-bb5f-2233220a1bf4.png)
 
-### 3. Generating per-read level tables with m6A, polyA tail and isoform information
+### 4. Generating per-read level tables with m6A, polyA tail and isoform information
 
-#### 3.1. Parse results at per read level from the m6A basecaller:
+#### 4.1. Parse results at per read level from the m6A basecaller:
 To proceed with this step, please download this [GitHub](https://github.com/biocorecrg/nanomod_map) repository. 
 - Usage:
 
@@ -176,7 +177,7 @@ d12b1362-fd55-4374-b46b-8ad13a3741f3 0 chr1 - 4490943 4492005 1093 1065 False NA
 6b124dcc-a013-4a62-b620-f40a47366480 4 chr1 - 4491381 4493181 1217 1205 False 4491528,4492245,4492352,4492362
 ```
 
-#### 3.2. Generate tables with m6A, polyA tail and isoform data:
+#### 4.2. Generate tables with m6A, polyA tail and isoform data:
 
 
 ## Dependencies and versions
