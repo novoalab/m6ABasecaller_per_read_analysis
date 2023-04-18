@@ -94,9 +94,29 @@ Note: the program does not require a matching number of replicates per condition
 
 * Expected output:
 
-```
-TO FILL IN 
-```
+#### Plots 
+
+- Barplot of replicable sites per condition 
+
+- Scatterplot of ModFreqs between replicates of the same condition
+
+- Scatterplot of average ModFreqs of different conditions
+
+- Venn diagram of sites found replicable in each condition 
+
+- Venn diagram of sites in each replicate of each condition
+
+#### MEME
+
+-output of meme run on the sequence context of the replicable sites
+
+#### Text files
+
+- Raw Data table with raw information from mod.gz filtered according to user's parameters 
+
+- Summary Data with modification frequencies, median frequencies per condition, ratios between conditions and changing status assigned
+
+- Bedgraph with modification frequency difference between condition 1 (reference) and condition 2 per m6A position
 
 
 * Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
