@@ -12,6 +12,8 @@ The m6A basecaller allows to directly base-call RNA modifications from direct RN
 - [Running the code](#Running-the-code)
 	- [1. Basecalling with m6A basecalling model](#1-basecalling-with-m6A-basecalling-model)
 	- [2. Processing ModPhred output](#2-processing-modphred-output)
+	- [3. Generation of metagene plots based on the results from the m6A basecaller](#3-metagene-plot-m6Abasecaller-output)
+	- [4. Analysis at per-read level](#4-read-level-analysis)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
 - [Contact](#Contact) 
@@ -118,7 +120,7 @@ Note: the program does not require a matching number of replicates per condition
 
 - Bedgraph with modification frequency difference between condition 1 (reference) and condition 2 per m6A position
 
-### 3. Processing ModPhred output: examples
+#### 2.2. Processing ModPhred output: examples
 
 * Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
 ```python
@@ -136,7 +138,7 @@ python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 c
 ```
 
 
-#### 2.2. Generation of  metagene plots based on the results from the m6A basecaller:
+### 3. Generation of  metagene plots based on the results from the m6A basecaller
 
 First, you'll need to install dependencies: 
 ```bash
