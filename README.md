@@ -58,7 +58,7 @@ You may use this model standalone with Guppy, and then use megalodon or ModPhred
 
 Usage: 
 ```
-TO FILL IN
+guppy_basecaller –i path/to/sample/fast5 –s path/to/sample/output –c ont-guppy/data/rna_r9.4.1_70bps_m6A_hac.cfg
 ```
 
 
