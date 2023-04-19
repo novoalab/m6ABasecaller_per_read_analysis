@@ -55,7 +55,7 @@ def extract_starts_ends(transcript_subset, start):
     for i in range(1,len(valid)):
         diff = valid[i]-valid[i-1]
 
-        if diff>=15:
+        if diff>=35:
             bin += 1
             bins[bin] = [str(valid[i])]
         else:
@@ -109,12 +109,14 @@ transcripts_to_analyse, parsed_data = parse_data(input_data, args.coverage)
 #Extract reads from transcripts with coverage>=args.coverage:
 coocurance_data = ""
 for ind_transcript in transcripts_to_analyse:
-    #ind_transcript = "ENST00000391857"
+    #ind_transcript = "ENST00000395699"
     #Perform calculations on reads belonging to the same transcript:
     print('-- Analysing transcript: {} ---'.format(ind_transcript))
     
     #Subset data per transcript:
     transcript_subset = parsed_data.loc[parsed_data['isoform_id']==ind_transcript, ['read_id', 'start_aln', 'end_aln', 'assignment_type', 'assignment_data']]
+    transcript_subset['start_aln'] = pd.to_numeric(transcript_subset['start_aln'])
+    transcript_subset['end_aln'] = pd.to_numeric(transcript_subset['end_aln'])
     
     #Extract significant start/end coordinates:
     starts = extract_starts_ends(transcript_subset, True)
@@ -127,9 +129,14 @@ for ind_transcript in transcripts_to_analyse:
     for i in range(0,len(combinations)):
         ind_start = combinations[i][0]
         ind_end = combinations[i][1]
-        
+
         annotation_subset = transcript_subset.loc[(transcript_subset['start_aln']<=(ind_start+25)) & (transcript_subset['start_aln']>=(ind_start-25)) & (transcript_subset['end_aln']<=(ind_end+25)) & (transcript_subset['end_aln']>=(ind_end-25)),'read_id']
         
+        #If none of the reads fill in the coordinates, skip them:
+        if annotation_subset.empty:
+            print('No reads match this coordinate set.')
+            continue
+
         #Define updated transcript id:
         updated_transcript_id = ind_transcript+'_'+str(i)
 

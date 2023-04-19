@@ -14,13 +14,23 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 
 #Additional functions:
-def parse_data (input_data,min_coverage):
-    #Only include reads that were uniquely assigned and full-length:
-    uniquely_assigned = input_data.loc[(input_data.iloc[:,4]=="unique") & ((input_data.iloc[:,5]=="fsm") | (input_data.iloc[:,5]=="mono_exon_match"))]
+def parse_data (input_data,min_coverage, reannotated):
 
-    #Extract transcript IDs with coverage>=args.coverage:
-    transcript_counts = uniquely_assigned['isoform_id'].value_counts()
-    transcript_coverage = transcript_counts[transcript_counts>=min_coverage].index.tolist()
+    #If reannotated, do not filter by converage and by assignment type as data will only include unique + fsm/mono_exon_match reads: 
+    if reannotated:
+        uniquely_assigned = input_data
+        
+        #Extract transcripts to be analysed:
+        transcript_counts = uniquely_assigned['upd_transcript_id'].value_counts()
+        transcript_coverage = transcript_counts[transcript_counts>=min_coverage].index.tolist()
+
+    else:
+        #Only include reads that were uniquely assigned and full-length:
+        uniquely_assigned = input_data.loc[(input_data.iloc[:,4]=="unique") & ((input_data.iloc[:,5]=="fsm") | (input_data.iloc[:,5]=="mono_exon_match"))]
+
+        #Extract transcript IDs with coverage>=args.coverage:
+        transcript_counts = uniquely_assigned['isoform_id'].value_counts()
+        transcript_coverage = transcript_counts[transcript_counts>=min_coverage].index.tolist()
 
     #Print summary to stout:
     print('-- Transcript selection summary --')
@@ -37,12 +47,12 @@ def calculate_frequencies(transcript_data,transcript_id,min_expected,total_count
     m6A_sites = list()
     for col in range(0, sites.shape[1]):
         m6A_sites.append(sites.iloc[:,col].dropna().unique().tolist())
-
+    
     m6A_sites = set(list(itertools.chain.from_iterable(m6A_sites))) 
-
+    
     #Calculate the frequency (stoichiometries) for each individual site: 
-    counts = defaultdict(lambda:1)
-
+    counts = defaultdict(lambda:0)
+    
     #Loop over and get the site counts:
     for site in m6A_sites:
         for line in range(0,sites.shape[0]):
@@ -81,6 +91,9 @@ def calculate_frequencies(transcript_data,transcript_id,min_expected,total_count
             #Calculate frequency for individual sites:
             freq_A = counts[comp[0]]/total_counts
             freq_B = counts[comp[1]]/total_counts
+            #print(counts[comp[0]])
+            #print(counts[comp[1]])
+            #print(total_counts)
 
             #Apply min_expected counts threshold:
             counts_expected = freq_A*freq_B*total_counts
@@ -103,11 +116,10 @@ def calculate_frequencies(transcript_data,transcript_id,min_expected,total_count
                     counts[comparison] = 0
                 
                 #Calculate standard deviations from expected
-                counts_expected = freq_A*freq_B*sites.shape[0]
                 sd_from_expected = (counts[comparison] - counts_expected)/math.sqrt(counts_expected*(1-(freq_A*freq_B)))
 
                 #Update final dataframe:
-                to_update = pd.DataFrame([[transcript_id, comp[0], comp[1], sites.shape[0], freq_A, freq_B, counts[comparison]/sites.shape[0], freq_A*freq_B, sd_from_expected]])
+                to_update = pd.DataFrame([[transcript_id, comp[0], comp[1], total_counts, counts[comp[0]], freq_A, counts[comp[1]], freq_B, counts[comparison], counts[comparison]/total_counts, freq_A*freq_B, sd_from_expected]])
                 if type(final_data)==str:
                     final_data = to_update
                 else: 
@@ -128,26 +140,34 @@ parser.add_argument("-i", "--input", help="Path to the input file containing per
 parser.add_argument("-o", "--output", help="Output name.")
 parser.add_argument("-cov", "--coverage", default=200, type=int, help="Minimum coverage to include a transcript in the analysis. Default = 200")
 parser.add_argument("-min_exp", "--min_expected", default=2, type=int, help="Minimum expected counts to include a pairwise comparison in the analysis. Default = 2")
+parser.add_argument("-rean", "--reannotated", help="Input is per read data reannotated by annotate_UTRs.py", action="store_true")
 
 #Read arguments from the command line
 args = parser.parse_args()
 
 #Read the data:
-input_data = pd.read_table(args.input, usecols=['read_id', 'chr', 'pos_m6A_sites', 'isoform_id', 'assignment_type', 'assignment_data'])
-transcripts_to_analyse, parsed_data = parse_data(input_data, args.coverage)
+if args.reannotated:
+    input_data = pd.read_table(args.input, usecols=['read_id', 'chr', 'pos_m6A_sites', 'upd_transcript_id'])
+else:
+    input_data = pd.read_table(args.input, usecols=['read_id', 'chr', 'pos_m6A_sites', 'isoform_id', 'assignment_type', 'assignment_data'])
+
+#Extract transcripts to analyse:
+transcripts_to_analyse, parsed_data = parse_data(input_data, args.coverage, args.reannotated)
 
 #Extract reads from transcripts with coverage>=args.coverage:
 coocurance_data = ""
 for ind_transcript in transcripts_to_analyse:
-    
+    #ind_transcript = "ENST00000585603_2"
     #Perform calculations on reads belonging to the same transcript:
     print('-- Analysing transcript: {} ---'.format(ind_transcript))
     
     #Subset data per transcript:
-    transcript_subset = parsed_data.loc[parsed_data['isoform_id']==ind_transcript, 'pos_m6A_sites']
+    if args.reannotated:
+        transcript_subset = parsed_data.loc[parsed_data['upd_transcript_id']==ind_transcript, 'pos_m6A_sites']
+    else:
+        transcript_subset = parsed_data.loc[parsed_data['isoform_id']==ind_transcript, 'pos_m6A_sites']
     
-    if transcript_subset is not None:
-        
+    if transcript_subset is not None:    
         results = calculate_frequencies(transcript_subset.dropna(axis = 0, how = 'all'),ind_transcript, args.min_expected, transcript_subset.shape[0])
 
         if type(results)==str:
@@ -158,8 +178,9 @@ for ind_transcript in transcripts_to_analyse:
             coocurance_data = pd.concat([coocurance_data,results])
     else:
         print('Transcript without m6A sites.')
+    
 
-coocurance_data.columns = ['Transcript','Site A','Site B', 'Transcript_counts','FreqA','FreqB', 'obs_FreqAB', 'exp_FreqAB','SdFromExpected']
+coocurance_data.columns = ['Transcript','Site A','Site B','Transcript_counts','Counts_A','FreqA','Counts_B','FreqB', 'Counts_AB', 'obs_FreqAB', 'exp_FreqAB','SdFromExpected']
 
 #Output results in a tsv file:
 coocurance_data.to_csv('{}_CoocuranceAnalysis.tsv'.format(args.output), sep='\t', index=False)

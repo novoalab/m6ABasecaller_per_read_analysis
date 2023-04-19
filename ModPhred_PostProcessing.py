@@ -451,7 +451,7 @@ def main():
     replicable_sites_dict = dict()
     for count,condition in enumerate(conditions):
         replicable_sites_dict[condition] = set(replicable_per_condition[count].loc[:,"Site_ID"])
-    print(replicable_per_condition)
+
     #Only output the VennDiagram if there are 6 conditions or less:
     if len(conditions)<=6:
         VennDiagrams(replicable_sites_dict, args.output+"_Output/Plots/"+output+"_VennDiagram_ReplicableSites_AcrossConditions")
