@@ -51,3 +51,13 @@ bash ./PerRead_Analysis/PerRead_Table/Generate_perread_tables.sh Per_read_Filter
 ```bash
 TO FILL IN
 ```
+
+## 2. Re-annotating 5' and 3' UTR from reads belonging to the same isoform
+
+## 3. Modification frequency analysis
+
+## 4. Co-occurance analysis
+
+
+
+
