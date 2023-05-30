@@ -43,7 +43,7 @@ d12b1362-fd55-4374-b46b-8ad13a3741f3 0 chr1 - 4490943 4492005 1093 1065 False NA
 
 - Usage:
 ```bash
-bash ./PerRead_Analysis/PerRead_Table/Generate_perread_tables.sh Per_read_Filtered_ReplicableSites.tsv pA_tail.txt isoquant.tsv Filtered
+bash ./PerRead_Analysis/PerRead_Table/Generate_perread_tables.sh Per_read_Filtered_ReplicableSites.tsv pA_tail.txt isoquant.tsv sample_name output_name
 
 ```
 
@@ -54,7 +54,28 @@ TO FILL IN
 
 ## 2. Re-annotating 5' and 3' UTR from reads belonging to the same isoform
 
+First, if we are analysing multiple samples, we should first merge the per read tables from each one of them. 
+
+- Usage:
+```bash
+python ./PerRead_Analysis/PerIsoform_Analysis/annotate_UTRs.py -i per_read_table.tsv -o Reannotated
+
+```
+
+- Command line example:
+```bash
+python ./PerRead_Analysis/PerIsoform_Analysis/annotate_UTRs.py -i XXX -o XXX
+
+```
+
+- Expected output:
+```bash
+TO FILL IN
+```
+
 ## 3. Modification frequency analysis
+
+
 
 ## 4. Co-occurance analysis
 
