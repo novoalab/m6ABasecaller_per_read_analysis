@@ -148,7 +148,7 @@ for ind_transcript in transcripts_to_analyse:
 
         #Save re-annotated reads into a table:
         output_path = 'per_read_reannotated_unique_fsm_monoex_'+args.output+'.tsv' 
-        to_export.to_csv(output_path, sep="\t", index=False, mode='a', header=not os.path.exists(output_path))
+        to_export.to_csv(output_path, sep="\t", index=False, mode='a', na_rep='NA', header=not os.path.exists(output_path))
 
     
 

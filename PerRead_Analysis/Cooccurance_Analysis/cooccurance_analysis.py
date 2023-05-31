@@ -41,7 +41,7 @@ def parse_data (input_data,min_coverage, reannotated):
 
 def calculate_frequencies(transcript_data,transcript_id,min_expected,total_counts):
     
-    #Extract all individual m6A positions: 
+    #Extract all individual m6A positions:
     sites = transcript_data.str.split(',',expand=True)
     
     m6A_sites = list()
@@ -147,7 +147,7 @@ args = parser.parse_args()
 
 #Read the data:
 if args.reannotated:
-    input_data = pd.read_table(args.input, usecols=['read_id', 'chr', 'pos_m6A_sites', 'upd_transcript_id'])
+    input_data = pd.read_table(args.input, usecols=['read_id', 'chr', 'pos_m6A_sites', 'upd_transcript_id'], dtype={"pos_m6A_sites": str})
 else:
     input_data = pd.read_table(args.input, usecols=['read_id', 'chr', 'pos_m6A_sites', 'isoform_id', 'assignment_type', 'assignment_data'])
 
@@ -167,7 +167,7 @@ for ind_transcript in transcripts_to_analyse:
     else:
         transcript_subset = parsed_data.loc[parsed_data['isoform_id']==ind_transcript, 'pos_m6A_sites']
     
-    if transcript_subset is not None:    
+    if transcript_subset is not None: 
         results = calculate_frequencies(transcript_subset.dropna(axis = 0, how = 'all'),ind_transcript, args.min_expected, transcript_subset.shape[0])
 
         if type(results)==str:

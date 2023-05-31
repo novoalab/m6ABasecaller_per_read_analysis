@@ -20,10 +20,14 @@ args = parser.parse_args()
 #Import and parse input data:
 m6a_sites = pd.read_table(args.per_read, sep=" ")
 replicable_sites = pd.read_table(args.replicable_sites, sep="\t", usecols=[1,2])
+print('Finished importing the data.')
 
 #Loop over all chromosomes:
 for chr_ref in m6a_sites['ref_name'].unique():
     
+    #Report reference that is being processed:
+    print(chr_ref)
+
     #Subset m6a sites and replicable sites:
     subset_m6a = m6a_sites.loc[m6a_sites['ref_name'] == chr_ref]
     subset_replicable = replicable_sites.loc[replicable_sites['chr'] == chr_ref].iloc[:,1].unique()

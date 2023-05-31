@@ -6,7 +6,8 @@
 m6a=$1
 pA_tail=$2
 isoforms=$3
-output=$4
+sample=$4
+output=$5
 
 ##Isoform data: 
 #Extract transcript information: 
@@ -27,8 +28,11 @@ out_name="per_read_"$output".tsv"
 #Generate the table: 
 join -a 1 -e "NA" -o auto <(sort $m6a) <(sort $pA_tail | uniq) | join -a 1 -e "NA" -o auto - <(sort final.isoforms.txt) | join -a 1 -e "NA" -o auto -  <(sort final.genes.txt) | join -a 1 -e "NA" -o auto - <(cut -f 1,3 assignment_type.tsv | sort | uniq ) | join -a 1 -e "NA" -o auto - <(sort assigning_events.tsv) | awk -v OFS='\t' '{print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$14,$15,$16,$17}' > $out_name
 
+#Add sample information:
+sed -i "s/$/\t$sample/" $out_name
+
 #Add header: 
-sed -i '1i read_id\tnum_m6a_sites\tchr\tstrand\tstart_aln\tend_aln\tread_length\tbases_aligned\tsecondary_aln\tpos_m6A_sites\ttailfindr\tnanopolish\tisoform_id\tgene_id\tassignment_type\tassignment_data' $out_name
+sed -i '1i read_id\tnum_m6a_sites\tchr\tstrand\tstart_aln\tend_aln\tread_length\tbases_aligned\tsecondary_aln\tpos_m6A_sites\ttailfindr\tnanopolish\tisoform_id\tgene_id\tassignment_type\tassignment_data\tsample' $out_name
 
 ##Clean intermediate files:
 rm test.isoforms.tsv
