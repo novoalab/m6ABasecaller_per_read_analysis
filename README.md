@@ -1,6 +1,6 @@
 # m6ABasecaller
 
-Welcome to the m6ABasecaller!! 
+Welcome to the m6ABasecaller GitHub repo!! 
 
 The m6ABasecaller allows to directly base-call m6A RNA modifications in individual reads, with single molecule resolution, from direct RNA sequencing nanopore raw FAST5 files. 
 
