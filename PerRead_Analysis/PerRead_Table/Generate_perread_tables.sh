@@ -2,6 +2,24 @@
 ### Script to generate per read-level tables ###
 ################################################
 
+# Create help message:
+
+Help()
+{
+   # Display Help
+   echo "Usage: Generate_perread_tables.sh m6a_data.tsv polyA_data.tsv isoquant.tsv sample_name output_name"
+   echo
+}
+
+# Get the options
+while getopts ":h" option; do
+   case $option in
+      h) # display Help
+         Help
+         exit;;
+   esac
+done
+
 #Import arguments:
 m6a=$1
 pA_tail=$2
