@@ -313,11 +313,13 @@ python ./Cooccurance_Analysis/cooccurance_density.py -i ./example_output/test_Co
 
 - Expected output:
 
-
+![Distribution_comparisons](https://github.com/novoalab/m6ABasecaller/blob/main/img/test_DensityPlot_CoocuranceAnalysis.pdf)
 
 ```bash
 MannwhitneyuResult(statistic=261.0, pvalue=0.2923883610418598)
 ```
+
+![Sd_GenDistance](https://github.com/novoalab/m6ABasecaller/blob/main/img/test_DensityPlot_CoocuranceAnalysis.pdf)
 
 
 
