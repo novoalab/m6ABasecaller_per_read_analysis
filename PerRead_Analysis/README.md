@@ -187,16 +187,140 @@ optional arguments:
 
 - Command line example:
 ```bash
-python ./../ModificationFrequency_Analysis/ModFreq_Tables.py -i ./example_output/per_read_reannotated_unique_fsm_monoex_test.tsv -gtf ./example_input/Homo_sapiens.GRCh38.109.chr_annotation_chrM.sorted.exons.gtf -o test
+python ./ModificationFrequency_Analysis/ModFreq_Tables.py -i ./example_output/per_read_reannotated_unique_fsm_monoex_test.tsv -gtf ./example_input/Homo_sapiens.GRCh38.109.chr_annotation_chrM.sorted.exons.gtf -o test
 ```
 
 - Expected output:
 ```bash
-MISSING!!
+head test_ModFreq_PerGene.tsv 
+
+Sample	GeneID	Coverage	m6A_Site	ModFreq
+test_data	ENSG00000133112	1904	45336884	0.12920168067226892
+test_data	ENSG00000133112	1904	45337046	0.10504201680672269
+test_data	ENSG00000133112	1904	45337294	0.3177521008403361
+test_data	ENSG00000133112	1904	45337310	0.11922268907563026
+test_data	ENSG00000196136	1019	94614605	0.20608439646712462
+
+
+head test_ModFreq_PerIsoform.tsv 
+
+Sample	GeneID	IsoformID	Coverage	m6A_Site	ModFreq
+test_data	ENSG00000133112	ENST00000530705_0	434	45336884	0.5668202764976958
+test_data	ENSG00000133112	ENST00000530705_0	434	45337046	0.4608294930875576
+test_data	ENSG00000133112	ENST00000530705_0	434	45337294	0.35023041474654376
+test_data	ENSG00000133112	ENST00000530705_0	434	45337310	0.15898617511520738
+test_data	ENSG00000133112	ENST00000530705_1	1470	45337294	0.3081632653061224
+```
+
+### 3.2. Calculate difference in modification frequency (ΔModFreq):
+To calculate ΔModFreq between isoforms, please use the following script: `./ModificationFrequency_Analysis/ModFreq_Difference.py`
+
+```bash
+usage: ModFreq_Difference.py [-h] [-i INPUT] [-cov COVERAGE] [-o OUTPUT]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INPUT, --input INPUT
+                        Path to the input file containing modification
+                        frequencies at per isoform or gene level.
+  -cov COVERAGE, --coverage COVERAGE
+                        Minimum coverage to include an isoform/gene in the
+                        analysis. Default = 40
+  -o OUTPUT, --output OUTPUT
+                        Output name.
+```
+
+- Command line example:
+```bash
+python ./ModificationFrequency_Analysis/ModFreq_Difference.py -i ./example_output/test_ModFreq_PerIsoform.tsv -o test
+```
+
+- Expected output:
+```bash
+head DiffModFreq_PerIsoform.tsv 
+
+Sample  GeneID  Isoform_1       Isoform_2       Site    ModFreq_I1      ModFreq_I2      ΔModFreq(I1-I2)
+test_data       ENSG00000133112 ENST00000530705_0       ENST00000530705_1       45337310        0.15898617511520738     0.10748299319727893     0.05150318191792845
+test_data       ENSG00000133112 ENST00000530705_0       ENST00000530705_1       45337294        0.35023041474654376     0.3081632653061224      0.042067149440421336
+```
+
+## 4. Co-occurance analysis
+
+### 4.1. Calculate standard deviation from expected values:
+To assess if a pair of sites co-occur or are mutually exclusive, it is needed to calculate the standard deviation from expected values using the script `./Cooccurance_Analysis/cooccurance_analysis.py`.
+
+```bash
+usage: cooccurance_analysis.py [-h] [-i INPUT] [-o OUTPUT] [-cov COVERAGE]
+                               [-min_exp MIN_EXPECTED] [-rean]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INPUT, --input INPUT
+                        Path to the input file containing per read label data.
+  -o OUTPUT, --output OUTPUT
+                        Output name.
+  -cov COVERAGE, --coverage COVERAGE
+                        Minimum coverage to include a transcript in the
+                        analysis. Default = 200
+  -min_exp MIN_EXPECTED, --min_expected MIN_EXPECTED
+                        Minimum expected counts to include a pairwise
+                        comparison in the analysis. Default = 2
+  -rean, --reannotated  Input is per read data reannotated by annotate_UTRs.py
+```
+
+- Command line example:
+```bash
+python ./Cooccurance_Analysis/cooccurance_analysis.py -i ./example_output/per_read_reannotated_unique_fsm_monoex_test.tsv -o test -rean
+```
+
+- Expected output:
+```bash
+head test_CoocuranceAnalysis.tsv
+
+Transcript	Site A	Site B	Transcript_counts	Counts_A	FreqA	Counts_B	FreqB	Counts_AB	obs_FreqAB	exp_FreqAB	SdFromExpected
+ENST00000530705_1	45337310	45337294	1470	158	0.10748299319727891	453	0.3081632653061224	62	0.04217687074829932	0.03312231014854922	1.939902790252726
+ENST00000393078_0	94614956	94614605	1019	429	0.4210009813542689	210	0.20608439646712462	93	0.09126594700686948	0.08676173315446169	0.5107988770871357
+ENST00000393078_0	94614956	94614893	1019	429	0.4210009813542689	96	0.09421000981354269	45	0.04416094210009813	0.03966250658489678	0.7357776138717788
+ENST00000393078_0	94614956	94614769	1019	429	0.4210009813542689	81	0.07948969578017664	31	0.03042198233562316	0.033465239931006655	-0.5401571091944367
+ENST00000393078_0	94614956	94615034	1019	429	0.4210009813542689	71	0.06967615309126594	31	0.03042198233562316	0.029333728828413237	0.20587260578752073
+```
+
+### 4.2. Analyse the distribution of standard deviation from expected values:
+Please use the script: `./Cooccurance_Analysis/cooccurance_density.py`.
+
+```bash
+usage: cooccurance_density.py [-h] [-i INPUT] [-o OUTPUT] [-cov COVERAGE]
+                              [-min_exp MIN_EXPECTED]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INPUT, --input INPUT
+                        Path to the input file containing co-occurance data.
+  -o OUTPUT, --output OUTPUT
+                        Output name.
+  -cov COVERAGE, --coverage COVERAGE
+                        Minimum coverage to include a transcript in the
+                        analysis. Default = 200
+  -min_exp MIN_EXPECTED, --min_expected MIN_EXPECTED
+                        Minimum expected counts to include a pairwise
+                        comparison in the analysis. Default = 2
+```
+
+- Command line example:
+```bash
+python ./Cooccurance_Analysis/cooccurance_density.py -i ./example_output/test_CoocuranceAnalysis.tsv -o test
+```
+
+- Expected output:
+
+
+
+```bash
+MannwhitneyuResult(statistic=261.0, pvalue=0.2923883610418598)
 ```
 
 
-## 4. Co-occurance analysis
+
 
 
 
