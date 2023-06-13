@@ -5,22 +5,30 @@ The m6A basecaller allows the analysis of m6A data at per single molecule level.
 ## 1. Generating per-read level tables with m6A, polyA tail and isoform information
 
 ### 1.1. Parse results at per read level from the m6A basecaller:
-To proceed with this step, please download this [GitHub](https://github.com/biocorecrg/nanomod_map) repository. 
 - Usage:
 
 ```bash
-python get_mods.py -i input.bam -o output.tsv -q 15 -c all -s yes
+python ./PerRead_Table/get_mods.py -i input.bam -o output.tsv -q 15 -c all -s yes
 
 awk '{sub(/True/, "-", $4)}1' output.tsv | awk '{sub(/False/, "+", $4)}1' - > PerRead.tsv
 ```
 
+- Example:
+
+```bash
+python ./PerRead_Table/get_mods.py -i ./example_input/example_input.bam -o ./example_output/parse_m6A.tsv -q 15 -c all -s yes
+
+awk '{sub(/True/, "-", $4)}1' ./example_output/parse_m6A.tsv | awk '{sub(/False/, "+", $4)}1' - > ./example_output/parse_strand_m6A.tsv
+```
+
 - Expected output: 
 ```bash
-readname N_mod ref_name strand start end readlen alnlen is_secondary mod_list
-6c53fb4e-3deb-40dc-a23e-0321d969d2b5 1 chr1 - 4490932 4493594 2179 2175 False 4492362
-d12b1362-fd55-4374-b46b-8ad13a3741f3 0 chr1 - 4490943 4492005 1093 1065 False NA
-8613f34b-01cb-4c46-b419-f745147b28f1 1 chr1 - 4491371 4493583 1732 1705 False 4492352
-6b124dcc-a013-4a62-b620-f40a47366480 4 chr1 - 4491381 4493181 1217 1205 False 4491528,4492245,4492352,4492362
+readname N_mod ref_name is_reverse start end readlen alnlen is_secondary mod_list
+c297b2e7-baf1-4678-9a07-9eeee397e3ff 0 chr1 + 629651 630666 904 881 False NA
+0db3c821-2930-4107-a4e5-4e3a3ad09d68 1 chr1 + 632766 633436 638 612 False 633101
+de5af892-650c-4052-9d04-36cb9b49af76 0 chr1 + 632766 633443 622 593 False NA
+9f40bed2-2428-4c22-8254-ff702e9d8e92 0 chr1 + 632766 633442 671 610 False NA
+5ed78e6a-2f26-4346-82f6-98e3f95ad5b5 0 chr1 + 632766 633440 675 602 False NA
 ```
 
 ### 1.2. Filter out non-replicable sites from the m6A data at per read level:
@@ -28,6 +36,14 @@ d12b1362-fd55-4374-b46b-8ad13a3741f3 0 chr1 - 4490943 4492005 1093 1065 False NA
 ```bash
 python ./PerRead_Analysis/PerRead_Table/filter_mod_sites.py -pr PerRead.tsv -rs PerPosition_SummaryData_ReplicableSites.tsv -o Filtered
 
+```
+
+- Example:
+
+```bash
+python ./PerRead_Table/get_mods.py -i ./example_input/example_input.bam -o ./example_output/parse_m6A.tsv -q 15 -c all -s yes
+
+awk '{sub(/True/, "-", $4)}1' ./example_output/parse_m6A.tsv | awk '{sub(/False/, "+", $4)}1' - > ./example_output/parse_strand_m6A.tsv
 ```
 
 - Expected output:
