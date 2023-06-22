@@ -1,8 +1,24 @@
 # Analysis of m6A sites at per read level
 
-The m6A basecaller allows the analysis of m6A data at per single molecule level. Before proceeding with this analysis, please first perform the analysis at per position level here (MISSING LINK). 
+The m6A basecaller allows the analysis of m6A data at per single molecule level. Before proceeding with this analysis, please first perform the analysis at per position level here ([MISSING LINK](https://github.com/novoalab/m6ABasecaller/tree/main/PerPosition_Analysis)). 
 
-MISSING: how to run mop_tail and isoquant!!
+Prior to running this section, please make sure that you have: 
+
+- The bam files obtained as output of ModPhred pipeline in the minimap2 folder. In order to avoid artefacts due to mapping ambiguities, please filter these bams so that they only contain unique and primary alignments: 
+
+```bash
+samtools view -Sb -h  -F 3844 pre-filtered.bam > unique_primary_reads.bam
+```
+
+- A table with polyA length information, calculated with tailfindr and nanopolish. This table can be obtained with the mop_tail module of Master of Pores (see https://github.com/biocorecrg/MOP2) and will be in mop_tail/polya_common/fast5_joined.txt. 
+
+- A table with Isoquant read assignment to isoforms. Isoquant (https://github.com/ablab/IsoQuant) should be run on the filtered bam files, we suggest to  use the latest annotation for your organism and to use the following command: 
+
+```bash
+isoquant.py --reference same_ref_as_the_alignment.fa --genedb annotation.gtf --stranded forward --complete_genedb --no_secondary --count_exons --bam unique_primary_reads.bam --data_type nanopore -o samplename
+```
+This command will output many tables, the one needed for the per read analysis will be in Isoquant output in 00_samplename/00_samplename.read_assignments.tsv
+
 
 ## 1. Generating per-read level tables with m6A, polyA tail and isoform information
 
