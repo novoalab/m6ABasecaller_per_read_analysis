@@ -6,6 +6,7 @@ from functools import reduce
 import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy as sp
+from scipy import stats
 from venn import venn
 import numpy as np
 import matplotlib.ticker as mticker
@@ -134,11 +135,15 @@ def ScatterPlot_ChangingSites(data, conditions, output, coverage):
                             y=data.columns[1],
                             cmap=sns.color_palette("ch:start=.2,rot=-.3", as_cmap=True))
     
+    #Add fit line:
+    #lin_reg = sns.lmplot(x=data.columns[0], y=data.columns[1], data=data)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(data.iloc[:,0],data.iloc[:,1])
+
     #Add headers and labels:
-    xy.plot([0,1],[0,1], 'black', linewidth=2, linestyle="dashed")
+    xy.plot([0,1],[intercept, intercept+slope*1], 'black', linewidth=2, linestyle="dashed")
     xy.set(xlabel = conditions[0], ylabel = conditions[1])
-    xy.set_ylim(0,0.6)
-    xy.set_xlim(0,0.6)
+    xy.set_ylim(0,1)
+    xy.set_xlim(0,1)
     xy.set_title("Median (% Mod) - Replicable sites with Coverage>="+coverage+" (n="+str(data.shape[0])+")")
     xy.xaxis.set_major_formatter(mticker.ScalarFormatter())
     xy.yaxis.set_major_formatter(mticker.ScalarFormatter())
@@ -147,6 +152,8 @@ def ScatterPlot_ChangingSites(data, conditions, output, coverage):
     res = sp.stats.spearmanr(data.iloc[:,0], data.iloc[:,1])
     ax = plt.gca()
     ax.text(.025, .95, '{}={:.3f}'.format(r"$\rho$", res.correlation),
+            transform=ax.transAxes)
+    ax.text(.025, .85, 'y={0:.1f}x+{1:.1f}'.format(slope, intercept),
             transform=ax.transAxes)
 
     xy.figure.savefig(output+"_Output/Plots/"+conditions[0]+"_"+conditions[1]+"_ChangingStatus_ReplicableSites.pdf", dpi=300)
@@ -322,7 +329,7 @@ def main():
         print("Total sites with coverage>="+str(args.coverage)+" in ALL samples: " + str(peaks_cov_AllSamples.shape[0]))
 
     #Add metadata:
-    peaks_cov_AllSamples["Site_ID"] = peaks_cov_AllSamples["chr"]+"_"+peaks_cov_AllSamples["pos"].astype("str")+"_"+peaks_cov_AllSamples["strand"]
+    peaks_cov_AllSamples["Site_ID"] = peaks_cov_AllSamples["chr"].astype("str")+"_"+peaks_cov_AllSamples["pos"].astype("str")+"_"+peaks_cov_AllSamples["strand"]
     
 
     #OUTPUT 1: Density plots with data from sites with cov>=args.coverage in ALL samples:
@@ -467,7 +474,6 @@ def main():
     replicable_sites = pd.merge(replicable_sites_coordinates, peaks_cov_AllSamples,
                                 on = ["Site_ID"],
                                 how = "inner")
-    
 
     #Calculate ModFreq median:
     for j in range(0, len(conditions)):           
@@ -498,7 +504,7 @@ def main():
                 status.append("No changes")
 
         replicable_sites[status_comparison] = status
-        
+
     #Optional annotation of the replicable m6A sites with bed file provided by the user:
     if args.gtf_file is None:
         #Report replicable sites - all data:
@@ -507,6 +513,7 @@ def main():
         #Report replicable sites - summary of analysis:
         number_summary_colums = len(conditions) + (3*(len(conditions)-1))
         replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-number_summary_colums:]], axis=1)
+
         replicable_sites_processed.to_csv(output+"_Output/Text_files/"+output+"_SummaryData_ReplicableSites.tsv", sep="\t", index=False)
         
     else:
@@ -528,6 +535,9 @@ def main():
         inter_filtered["Gene"] = inter_filtered["Annotation"].str.extract(r'(?<=gene_id) \"(.*?)\"')
         inter_filtered["Gene_name"] = inter_filtered["Annotation"].str.extract(r'(?<=gene_name) \"(.*?)\"')
 
+        #If the gene name is not found, replace NaN to None:
+        inter_filtered["Gene_name"] = inter_filtered["Gene_name"].replace({np.nan: "Not found"})
+
         #Merge the gene data for sites that overlap with two or more genes - thus, one line per unique site:
         inter_final = inter_filtered.iloc[:,[0,3,4]].groupby("Site_ID").agg({'Site_ID' : 'first', 'Gene' : ','.join, 'Gene_name' : ','.join}).reset_index(drop=True)
 
@@ -539,22 +549,21 @@ def main():
         #Report replicable sites - all data:
         replicable_sites.to_csv(output+"_Output/Text_files/"+output+"_RawData_ReplicableSites.tsv", sep="\t", index=False)
 
-        #Create a bedgraph with delta modfreq between the two conditions
-        modfreq = replicable_sites
-        modfreq['pos'] = modfreq['pos'] - 1
-        modfreq = modfreq.loc[:, ['chr', 'pos', 'pos', 'ModFreq('+conditions[0]+'-'+conditions[c]+')']]
-        
-        filename = output+"_Output/Text_files/"+output+"_DeltaModFreq.bedgraph"
-        with open(filename, "w", newline="") as fp:
-            fp.write("track type=bedGraph name=DeltaModFreq description=\"DeltaModFreq\" autoScale=on visibility=full color=200,100,0 altColor=0,100,200 priority=20 graphType=bar\n")
-            modfreq.to_csv(fp, sep="\t", index=False, header=False)
-        
-        #Report replicable sites - summary of analysis:
+        #Report summary data:
         number_summary_colums = len(conditions) + (3*(len(conditions)-1) + 2)
         replicable_sites_processed = pd.concat([replicable_sites.iloc[:,0:6], replicable_sites.iloc[:,-number_summary_colums:]], axis=1)
         replicable_sites_processed.to_csv(output+"_Output/Text_files/"+output+"_SummaryData_ReplicableSites.tsv", sep="\t", index=False)
 
-    
+        #Create a bedgraph with delta modfreq between the two conditions
+        modfreq = replicable_sites
+        modfreq['pos'] = modfreq['pos'] - 1
+        modfreq = modfreq.loc[:, ['chr', 'pos', 'pos', 'ModFreq('+conditions[0]+'-'+conditions[c]+')']]
+
+        filename = output+"_Output/Text_files/"+output+"_DeltaModFreq.bedgraph"
+        with open(filename, "w", newline="") as fp:
+            fp.write("track type=bedGraph name=DeltaModFreq description=\"DeltaModFreq\" autoScale=on visibility=full color=200,100,0 altColor=0,100,200 priority=20 graphType=bar\n")
+            modfreq.to_csv(fp, sep="\t", index=False, header=False)
+
     # OUTPUT 7: Scatter plot with changing sites (only sites with enough cov in all samples):
     #Generate one scatter plot for every pair-wise comparison:
     for c in range(1,len(conditions)):
