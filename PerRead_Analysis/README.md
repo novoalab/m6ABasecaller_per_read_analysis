@@ -195,15 +195,18 @@ optional arguments:
   -i INPUT, --input INPUT
                         Path to the input file containing reannotated per read
                         data (output from annotate_UTRs.py).
-  -gtf GTF, --gtf GTF   Path to the annotation file - ideally only containing
+  -gtf GTF, --gtf GTF   Path to the annotation file - it should only contain
                         exon data (*.gtf).
   -o OUTPUT, --output OUTPUT
                         Output name.
+  -rean, --reannotated  
+                        Input is per read data reannotated by annotate_UTRs.py
+
 ```
 
 - Command line example:
 ```bash
-python ./ModificationFrequency_Analysis/ModFreq_Tables.py -i ./example_output/per_read_reannotated_unique_fsm_monoex_test.tsv -gtf ./example_input/Homo_sapiens.GRCh38.109.chr_annotation_chrM.sorted.exons.gtf -o test
+python ./ModificationFrequency_Analysis/ModFreq_Tables.py -i ./example_output/per_read_reannotated_unique_fsm_monoex_test.tsv -gtf ./example_input/Homo_sapiens.GRCh38.109.chr_annotation_chrM.sorted.exons.gtf -o test -rean
 ```
 
 - Expected output:
