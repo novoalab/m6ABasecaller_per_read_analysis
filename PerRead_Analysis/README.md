@@ -199,8 +199,6 @@ optional arguments:
                         exon data (*.gtf).
   -o OUTPUT, --output OUTPUT
                         Output name.
-  -rean, --reannotated  
-                        Input is per read data reannotated by annotate_UTRs.py
 
 ```
 
