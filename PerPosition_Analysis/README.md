@@ -1,4 +1,4 @@
-# Analysis of m6A sites at per read level
+# Analysis of m6A sites at per position level
 
 ModPhred outputs a file containing all sites that have a coverage of at least 25 reads and a modification frequency of 5% in at least one of the samples included in the analysis. It is called `mod.gz` and it is processed to obtain replicable m6A sites at per position level among other types of information. 
 
