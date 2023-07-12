@@ -10,9 +10,9 @@ Prior to running this section, please make sure that you have:
 samtools view -Sb -h  -F 3844 pre-filtered.bam > unique_primary_reads.bam
 ```
 
-- A table with polyA length information, calculated with tailfindr and nanopolish. This table can be obtained with the mop_tail module of Master of Pores (see https://github.com/biocorecrg/MOP2) and will be in mop_tail/polya_common/fast5_joined.txt. 
+- A table with polyA length information, calculated with tailfindr and nanopolish. This table can be obtained with the mop_tail module of version2 from [Master of Pores](https://github.com/biocorecrg/MOP2) and will be in mop_tail/polya_common/fast5_joined.txt. 
 
-- A table with Isoquant read assignment to isoforms. Isoquant (https://github.com/ablab/IsoQuant) should be run on the filtered bam files, we suggest to  use the latest annotation for your organism and to use the following command: 
+- A table with Isoquant read assignment to isoforms. [Isoquant](https://github.com/ablab/IsoQuant) should be run on the filtered bam files, we suggest to  use the latest annotation for your organism and to use the following command: 
 
 ```bash
 isoquant.py --reference same_ref_as_the_alignment.fa --genedb annotation.gtf --stranded forward --complete_genedb --no_secondary --count_exons --bam unique_primary_reads.bam --data_type nanopore -o samplename
