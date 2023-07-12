@@ -1,4 +1,4 @@
-| File name (list of predicted m6A sites)* | Method                            | Cell line       | Species | Technology | Number of m6A sites | Study that produced the sequencing data | Study that produced the m6A sites list based on the data | Genome annotation |
+| File name (list of predicted m6A sites) | Method                            | Cell line       | Species | Technology | Number of m6A sites | Study that produced the sequencing data | Study that produced the m6A sites list based on the data | Genome annotation |
 |-----------------------------------------|-----------------------------------|-----------------|---------|------------|----------------------|-----------------------------------------|-------------------------------------------------------|-------------------|
 | m6Abasecaller_sites_HEK293T_WT_pooled_25cov_5freq.bed | direct RNA (m6ABasecaller) | HEK293T | Human | Nanopore | 7,922 | Pratanwanich et al. Nature Biotechnology 2021 | this study | hg38 |
 | m6Abasecaller_sites_HepG2_WT_pooled_25cov_5freq.bed | direct RNA (m6ABasecaller) | HepG2 | Human | Nanopore | 28,846 | Chen, Ying, et al. bioRxiv 2021 | this study | hg38 |
