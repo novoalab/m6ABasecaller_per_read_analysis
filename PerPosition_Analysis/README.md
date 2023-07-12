@@ -2,7 +2,12 @@
 
 ModPhred outputs a file containing all sites that have a coverage of at least 25 reads and a modification frequency of 5% in at least one of the samples included in the analysis. It is called `mod.gz` and it is processed to obtain replicable m6A sites at per position level among other types of information. 
 
-## 1. Processing ModPhred's output
+## Table of contents
+- [1. Processing ModPhred output](#1-Processing-ModPhred-output)
+- [2. Processing ModPhred output: examples](#2-Processing-ModPhred-output:-examples)
+- [Running the code](#Running-the-code)
+
+## 1. Processing ModPhred output
 
 To extract replicable sites from the `mod.gz` file as well as performing metagene and motif enrichment analysis, please use the script `ModPhred_PostProcessing.py`.
 
