@@ -81,10 +81,10 @@ Please see [this section](https://github.com/novoalab/m6ABasecaller/tree/main/Pe
 
 Software | Version 
 --- | ---
-ModPhred | xxx
+ModPhred | 1.0b
 venn | xxx
 pybedtools | xxx
-meme | xxx
+meme | 4.11.2
 
 ## Citation
   
