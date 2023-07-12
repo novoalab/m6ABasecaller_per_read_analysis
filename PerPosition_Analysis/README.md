@@ -54,7 +54,7 @@ optional arguments:
 Note: the program does not require a matching number of replicates per condition (i.e. you can have 2 reps for WT and 3 for KO)
 
 
-### 1.2. Examples
+### 1.2. Examples:
 
 * Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
 ```python
