@@ -1,6 +1,6 @@
 # Analysis of m6A sites at per read level
 
-The m6A basecaller allows the analysis of m6A data at per single molecule level. Before proceeding with this analysis, please first perform the analysis at per position level here ([MISSING LINK](https://github.com/novoalab/m6ABasecaller/tree/main/PerPosition_Analysis)). 
+The m6A basecaller allows the analysis of m6A data at per single molecule level. Before proceeding with this analysis, please first perform the analysis at per position level [here](https://github.com/novoalab/m6ABasecaller/tree/main/PerPosition_Analysis). 
 
 Prior to running this section, please make sure that you have: 
 
