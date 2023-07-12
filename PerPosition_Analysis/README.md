@@ -4,7 +4,7 @@ ModPhred outputs a file containing all sites that have a coverage of at least 25
 
 ## Table of contents
 - [1. Processing ModPhred output](#1-Processing-ModPhred-output)
-- [2. Generation of metagene plots from m6ABasecaller results](#2.-Generation-of-metagene plots-from-m6ABasecaller-results)
+- [2. Generation of metagene plots from m6ABasecaller results](#2-Generation-of-metagene-plots-from-m6ABasecaller-results)
 
 ## 1. Processing ModPhred output
 
