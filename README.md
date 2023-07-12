@@ -12,8 +12,8 @@ The m6ABasecaller allows to directly base-call m6A RNA modifications in **indivi
 - [Installation](#Installation)
 - [Running the code](#Running-the-code)
 	- [1. Basecalling with m6A basecalling model](#1-basecalling-with-m6A-basecalling-model)
-	- [2. Analysis at per-site level](#2-analysis-at-per-site-level)
-	- [3. Analysis at per-read level](#3-analysis-at-per-read-level)
+	- [2. Analysis of m6ABasecaller results at per-site level](#2-analysis-of-m6abasecaller-results-at-per-site-level)
+	- [3. Analysis of m6ABasecaller results at per-read level](#3-analysis-of-m6abasecaller-results-at-per-read-level)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
 - [Contact](#Contact) 
@@ -67,12 +67,12 @@ guppy_basecaller –i path/to/sample/fast5 –s path/to/sample/output –c ont-g
 ```
 
 
-### 2. Analysis at per-site level
+### 2. Analysis of m6ABasecaller results at per-site level
 
 Please see [this section](https://github.com/novoalab/m6ABasecaller/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at per-site level. 
 
 
-### 3. Analysis at per-read level
+### 3. Analysis of m6ABasecaller results at per-read level
 
 Please see [this section](https://github.com/novoalab/m6ABasecaller/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at per-site level. 
 
