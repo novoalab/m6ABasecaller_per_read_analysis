@@ -4,14 +4,13 @@ ModPhred outputs a file containing all sites that have a coverage of at least 25
 
 ## Table of contents
 - [1. Processing ModPhred output](#1-Processing-ModPhred-output)
-- [2. Processing ModPhred output: examples](#2-Processing-ModPhred-output:-examples)
-- [Running the code](#Running-the-code)
+- [2. Generation of metagene plots from m6ABasecaller results](#2.-Generation-of-metagene plots-from-m6ABasecaller-results)
 
 ## 1. Processing ModPhred output
 
 To extract replicable sites from the `mod.gz` file as well as performing metagene and motif enrichment analysis, please use the script `ModPhred_PostProcessing.py`.
 
-- Usage: 
+### 1.1. Usage: 
 
 ```
 ModPhred_PostProcessing.py [-h] [-i INPUT] [-o OUTPUT] [-r REFERENCE]
@@ -54,7 +53,25 @@ optional arguments:
 
 Note: the program does not require a matching number of replicates per condition (i.e. you can have 2 reps for WT and 3 for KO)
 
-* Expected output:
+
+### 1.2. Examples
+
+* Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
+```python
+python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed
+```
+
+*  Example 2: changing the coverage threshold (otherwise, default:50)
+```python
+python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed -cov 30
+```
+
+* Example 3: run the program in *decay* mode: it will consider a site valid if it has enough coverage in all replicates from at least one of the conditions (ie: WT or KO). Default: sites are valid when there is enough coverage across all the samples. 
+```python
+python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed -decay
+```
+
+### 1.3. Expected output:
 
 #### Plots 
 
@@ -80,25 +97,8 @@ Note: the program does not require a matching number of replicates per condition
 
 - Bedgraph with modification frequency difference between condition 1 (reference) and condition 2 per m6A position
 
-## 2. Processing ModPhred output: examples
 
-* Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
-```python
-python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed
-```
-
-*  Example 2: changing the coverage threshold (otherwise, default:50)
-```python
-python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed -cov 30
-```
-
-* Example 3: run the program in *decay* mode: it will consider a site valid if it has enough coverage in all replicates from at least one of the conditions (ie: WT or KO). Default: sites are valid when there is enough coverage across all the samples. 
-```python
-python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed -decay
-```
-
-
-## 3. Generation of metagene plots based on the results from the m6A basecaller
+## 2. Generation of metagene plots from m6ABasecaller results
 
 First, you'll need to install dependencies: 
 ```bash
