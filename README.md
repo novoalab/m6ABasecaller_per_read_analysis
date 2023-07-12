@@ -13,9 +13,9 @@ The m6ABasecaller allows to directly base-call m6A RNA modifications in **indivi
 - [Running the code](#Running-the-code)
 	- [1. Basecalling with m6A basecalling model](#1-basecalling-with-m6A-basecalling-model)
 	- [2. Processing ModPhred output](#2-processing-modphred-output)
-	- [3. Generation of metagene plots based on the results from the m6A basecaller](#3-metagene-plot-m6Abasecaller-output)
-	- [4. Analysis at per-site level](#4-site-level-analysis)
-	- [5. Analysis at per-read level](#5-read-level-analysis)
+	- [3. Generation of metagene plots based on m6Abasecaller output](#3-generation-of-metagene-plots-based-on-m6Abasecaller-output)
+	- [4. Analysis at per-site level](#4-analysis-at-per-site-level)
+	- [5. Analysis at per-read level](#5-#4-analysis-at-per-read-level)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
 - [Contact](#Contact) 
@@ -77,7 +77,7 @@ Usage:
 TO FILL IN
 ```
 
-### 3. Generation of metagene plots based on the results from the m6A basecaller
+### 3. Generation of metagene plots based on m6Abasecaller output
 
 MISSING DESCRIPTION
 
