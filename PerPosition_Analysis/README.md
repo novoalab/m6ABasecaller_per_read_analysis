@@ -75,7 +75,7 @@ Note: the program does not require a matching number of replicates per condition
 
 - Bedgraph with modification frequency difference between condition 1 (reference) and condition 2 per m6A position
 
-#### 2.2. Processing ModPhred output: examples
+## 2. Processing ModPhred output: examples
 
 * Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
 ```python
@@ -93,7 +93,7 @@ python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 c
 ```
 
 
-### 3. Generation of  metagene plots based on the results from the m6A basecaller
+## 3. Generation of metagene plots based on the results from the m6A basecaller
 
 First, you'll need to install dependencies: 
 ```bash
