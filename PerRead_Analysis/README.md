@@ -1,8 +1,10 @@
 # Analysis of m6A sites at per read level
 
-The m6ABasecaller allows the analysis of m6A data at per single molecule level. Before proceeding with this analysis, please first perform the analysis at per position level [here](https://github.com/novoalab/m6ABasecaller/tree/main/PerPosition_Analysis). 
+The m6ABasecaller allows the analysis of m6A modifications at single molecule level. 
 
-Prior to running this section, please make sure that you have: 
+Before proceeding with this analysis, please first perform the analysis at per position level [here](https://github.com/novoalab/m6ABasecaller/tree/main/PerPosition_Analysis). 
+
+Additionally, prior to running this section, please make sure that you have: 
 
 - The bam files obtained as output of ModPhred pipeline in the minimap2 folder. In order to avoid artefacts due to mapping ambiguities, please filter these bams so that they only contain unique and primary alignments: 
 
