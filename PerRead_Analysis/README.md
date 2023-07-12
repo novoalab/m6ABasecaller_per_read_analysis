@@ -19,6 +19,13 @@ isoquant.py --reference same_ref_as_the_alignment.fa --genedb annotation.gtf --s
 ```
 This command will output many tables, the one needed for the per read analysis will be in Isoquant output in 00_samplename/00_samplename.read_assignments.tsv
 
+## Table of contents
+- [1. Generating per-read level tables with m6A, polyA tail and isoform information](#1-Generating-per-read-level-tables-with-m6A,-polyA-tail-and-isoform-information)
+- [2. Re-annotating 5' and 3' UTR from reads belonging to the same isoform](#2-Re-annotating-5'-and-3'-UTR-from-reads-belonging-to-the-same-isoform)
+- [3. Modification frequency analysis](#3.-Modification-frequency-analysis)
+- [4. Co-occurrence analysis](#4.-Co-occurrence-analysis)
+
+
 
 ## 1. Generating per-read level tables with m6A, polyA tail and isoform information
 
@@ -261,7 +268,7 @@ test_data       ENSG00000133112 ENST00000530705_0       ENST00000530705_1       
 test_data       ENSG00000133112 ENST00000530705_0       ENST00000530705_1       45337294        0.35023041474654376     0.3081632653061224      0.042067149440421336
 ```
 
-## 4. Co-occurance analysis
+## 4. Co-occurrence analysis
 
 ### 4.1. Calculate standard deviation from expected values:
 To assess if a pair of sites co-occur or are mutually exclusive, it is needed to calculate the standard deviation from expected values using the script `./Cooccurance_Analysis/cooccurance_analysis.py`.
