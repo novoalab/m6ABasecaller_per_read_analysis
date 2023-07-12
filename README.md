@@ -69,12 +69,12 @@ guppy_basecaller –i path/to/sample/fast5 –s path/to/sample/output –c ont-g
 
 ### 2. Analysis at per-site level
 
-Please see [this section] for details on how to analyze m6ABasecaller results at per-site level. 
+Please see [this section](https://github.com/novoalab/m6ABasecaller/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at per-site level. 
 
 
 ### 3. Analysis at per-read level
 
-Please see [this section] for details on how to analyze m6ABasecaller results at per-site level. 
+Please see [this section](https://github.com/novoalab/m6ABasecaller/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at per-site level. 
 
 
 ## Dependencies and versions
