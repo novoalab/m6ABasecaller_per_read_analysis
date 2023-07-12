@@ -14,7 +14,8 @@ The m6ABasecaller allows to directly base-call m6A RNA modifications in **indivi
 	- [1. Basecalling with m6A basecalling model](#1-basecalling-with-m6A-basecalling-model)
 	- [2. Processing ModPhred output](#2-processing-modphred-output)
 	- [3. Generation of metagene plots based on the results from the m6A basecaller](#3-metagene-plot-m6Abasecaller-output)
-	- [4. Analysis at per-read level](#4-read-level-analysis)
+	- [4. Analysis at per-site level](#4-site-level-analysis)
+	- [5. Analysis at per-read level](#5-read-level-analysis)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
 - [Contact](#Contact) 
@@ -67,7 +68,42 @@ Usage:
 guppy_basecaller –i path/to/sample/fast5 –s path/to/sample/output –c ont-guppy/data/rna_r9.4.1_70bps_m6A_hac.cfg
 ```
 
-MISSING: LINKS TO PER POSITION AND PER READ READMEs
+### 2. Processing ModPhred output
+
+MISSING DESCRIPTION
+
+Usage: 
+```
+TO FILL IN
+```
+
+### 3. Generation of metagene plots based on the results from the m6A basecaller
+
+MISSING DESCRIPTION
+
+Usage: 
+```
+TO FILL IN
+```
+
+### 4. Analysis at per-site level
+
+MISSING DESCRIPTION
+
+Usage: 
+```
+TO FILL IN
+```
+
+
+### 5. Analysis at per-read level
+
+MISSING DESCRIPTION
+
+Usage: 
+```
+TO FILL IN
+```
 
 ## Dependencies and versions
 
