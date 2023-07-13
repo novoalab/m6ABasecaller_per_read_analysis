@@ -1,4 +1,8 @@
-| File name (list of predicted m6A sites)* | Method | Cell line | Species | Technology | number of m6A sites | Study that produced the sequencing data | Study that produced the m6A sites list based on the data | genome annotation  |
+| File name (list of predicted m6A sites)* | Method | Cell line | Species | Technology | number of m6A sites | Study that produced the sequencing data | Study that produced the m6A sites list based on the data |
+
+genome annotation
+
+ |
 | hg38-GLORI-seq-m6A-sites-HEK293T.bed | GLORI-seq | HEK293T | Human | Illumina | 170,240 | Liu et al., 2023 | Liu et al., 2023 | hg38 |
 | hg38-GLORI-seq-m6A-sites-HEK293T_cov25 | GLORI-seq | HEK293T | Human | Illumina | 37,749 | Liu et al., 2023 | Liu et al., 2023 | hg38 |
 | hg38-m6A_sites_HEK293T_miCLIP_correct.bed | miCLIP | HEK293T | Human | Illumina | 43,663 | NA | NA | hg38 |
