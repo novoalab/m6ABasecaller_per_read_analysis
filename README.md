@@ -90,7 +90,7 @@ meme | 4.11.2
   
 If you find this work useful, please cite: 
 
-Cruciani S*, Delgado-Tejedor A*, Pryszcz LP*, Medina R, Llovera L and Novoa EM. De novo basecalling of m6A RNA modifications at single-molecule and single-nucleotide resolution using direct RNA nanopore sequencing. BioRxiv 2023 (under review). 
+Cruciani S*, Delgado-Tejedor A*, Pryszcz LP*, Medina R, Llovera L and Novoa EM. De novo basecalling of m6A  modifications at single-molecule and single-nucleotide resolution. BioRxiv 2023 (under review). 
   
 ## Contact
 If you have any issues running this code, please go first over previous [issues](https://github.com/novoalab/m6ABasecaller/issues). If you still can't figure it out based on the prior responses/issues raised, please open a new issue. Thanks!   
