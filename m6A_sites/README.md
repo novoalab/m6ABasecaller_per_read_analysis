@@ -1,3 +1,10 @@
+Below is a table describing the BED files that can be found in this folder. 
+These bed files correspond to the list of m6A sites predicted by m6ABasecaller in different publicly available direct RNA nanopore sequencing datasets. 
+We should note that we only consider an m6A site as "true" if the site has at least 25 reads of coverage in the given dataset, and a minimum per-site modification frequency of 5%. 
+However, the predictions are done independently on each read (i.e. it is an m6A-aware basecaller) 
+
+
+
 | File name (list of predicted m6A sites) | Method                            | Cell line       | Species | Technology | Number of m6A sites | Study that produced the sequencing data | Genome annotation |
 |-----------------------------------------|-----------------------------------|-----------------|---------|------------|----------------------|-----------------------------------------|-------------------|
 | m6Abasecaller_sites_HEK293T_WT_pooled_25cov_5freq.bed | direct RNA (m6ABasecaller) | HEK293T | Human | Nanopore | 7,922 | Pratanwanich et al. Nature Biotechnology 2021 | hg38 |
