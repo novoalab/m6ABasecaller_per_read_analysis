@@ -117,3 +117,11 @@ The bed file required as input has to contain 6 columns: chr, start, end, "m6A",
 Expected output:
 
 ![image](https://user-images.githubusercontent.com/44866316/196667515-8d0993d9-249a-4f4f-bb5f-2233220a1bf4.png)
+
+## 3. Generation of scatterplots from m6ABasecaller results (for replicability or for comparison) 
+
+The script m6ABC_SCATTERPLOT_M6A_FREQUENCY.R contains the code to produce the scatteplots for checking replicability between replicates (with spearson's coefficient) and for comparing between samples. Please refer to the comments in the script for further detail.
+
+## 4. Generation of density plots from m6ABasecaller results (for comparison) 
+
+The script m6ABC_DENSITY_PLOT_M6A_FREQUENCY.R contains the code to produce the density plots for comparing between samples. Please refer to the comments in the script for further detail.
