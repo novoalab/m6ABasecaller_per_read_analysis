@@ -97,12 +97,12 @@ modPhred will produce a mod.gz output file that contains all the sites that were
 
 ### 2. Analysis of m6ABasecaller results at per-site level
 
-Please see [this section](https://github.com/novoalab/m6ABasecaller/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at per-site level. 
+Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at per-site level. 
 
 
 ### 3. Analysis of m6ABasecaller results at per-read level
 
-Please see [this section](https://github.com/novoalab/m6ABasecaller/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at per-read level. 
+Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at per-read level. 
 
 
 ## Dependencies and versions
