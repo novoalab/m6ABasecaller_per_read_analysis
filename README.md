@@ -14,8 +14,9 @@ The m6ABasecaller allows to directly base-call m6A RNA modifications in **indivi
 - [Installation](#Installation)
 - [Running the code](#Running-the-code)
 	- [1. Basecalling with m6A basecalling model](#1-basecalling-with-m6A-basecalling-model)
-	- [2. Analysis of m6ABasecaller results at per-site level](#2-analysis-of-m6abasecaller-results-at-per-site-level)
-	- [3. Analysis of m6ABasecaller results at per-read level](#3-analysis-of-m6abasecaller-results-at-per-read-level)
+	- [2. Extract m6A information with modPhred](#2-extract-m6A-information-with-modPhred)
+	- [3. Analysis of m6ABasecaller results at per-site level](#3-analysis-of-m6abasecaller-results-at-per-site-level)
+	- [4. Analysis of m6ABasecaller results at per-read level](#4-analysis-of-m6abasecaller-results-at-per-read-level)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
 - [Contact](#Contact) 
@@ -82,6 +83,7 @@ guppy_basecaller –i path/to/sample/fast5 –s path/to/sample/output –c ont-g
 For this option you don't need to download the m6A model, as it is already downloaded when installing MoP. 
 You can use the m6A basecaller model for basecalling performed by the mop_preprocess module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_preprocess.html)). All you need to do is to [download Master of Pores](https://biocorecrg.github.io/MoP3/install.html) and specify "guppy" as basecaller (please follow the instructions for installing it in MoP any version between 3.4.5 and 6.0.6 worked in our hands - it does not really matter as you are providing the basecalling model) and ``–pars_tools “drna_tool_splice_m6A_opt.tsv” ``. In your output folder you will have the ``fast5_files`` folder containing the basecalled fast5 files for downstream analysis with modPhred. 
 
+
 ### 2. Extract m6A information with modPhred (if you have basecalled with option b or c, skip this part if you went for option a)
 
 Here we use the tool [ModPhred](https://github.com/novoalab/modPhred) to encode m6A RNA modification and map the reads.  
@@ -115,12 +117,12 @@ modPhred will produce a mod.gz output file that contains all the sites that were
 
 
 
-### 2. Analysis of m6ABasecaller results at per-site level
+### 3. Analysis of m6ABasecaller results at per-site level
 
 Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at per-site level. 
 
 
-### 3. Analysis of m6ABasecaller results at per-read level
+### 4. Analysis of m6ABasecaller results at per-read level
 
 Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at per-read level. 
 
