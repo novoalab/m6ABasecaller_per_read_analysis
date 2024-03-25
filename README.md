@@ -84,8 +84,9 @@ For this option you don't need to download the m6A model, as it is already downl
 You can use the m6A basecaller model for basecalling performed by the mop_preprocess module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_preprocess.html)). All you need to do is to [download Master of Pores](https://biocorecrg.github.io/MoP3/install.html) and specify "guppy" as basecaller (please follow the instructions for installing it in MoP any version between 3.4.5 and 6.0.6 worked in our hands - it does not really matter as you are providing the basecalling model) and ``–pars_tools “drna_tool_splice_m6A_opt.tsv” ``. In your output folder you will have the ``fast5_files`` folder containing the basecalled fast5 files for downstream analysis with modPhred. 
 
 
-### 2. Extract m6A information with modPhred (if you have basecalled with option b or c, skip this part if you went for option a)
+### 2. Extract m6A information with modPhred 
 
+This section is required if you have basecalled with option b or c, skip it if you went for option a.
 Here we use the tool [ModPhred](https://github.com/novoalab/modPhred) to encode m6A RNA modification and map the reads.  
 
 modPhred will generate fastq and fastm files and align them to the reference with minimap2. It will store modification information both in the FASTQ and BAM files, in the QUALITY INFORMATION.
@@ -103,7 +104,7 @@ Usage:
 ```
 -f: your reference.fa file
 -o: path to output folder
--i: path to input folders (containing the ***m6A basecalled fast5 files***). You can provide >=1 input folders
+-i: path to input folders (containing the m6A basecalled fast5 files). You can provide >=1 input folders
 
 module load Singularity/3.2.1
 singularity exec modPhred/modphred-3.6.1.sif modPhred/run -f reference.fa -o m6A_basecaller -i path/to/sample1_m6Abasecalled_fast5_files  path/to/sample2_m6Abasecalled_fast5_files   path/to/sample3_m6Abasecalled_fast5_files  
