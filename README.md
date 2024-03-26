@@ -38,6 +38,8 @@ Please follow the instructions on how to install modPhred [here](https://modphre
 
 ## Running the code
 
+![scheme_m6ABC](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/14d6c17f-f66b-4d2d-a370-501dad4ba3e0)
+
 ### 1. Basecalling with m6A basecalling model
 
 #### a) All-in-one step solution: Base-call, store modification information and map with ModPhred (recommended option)
