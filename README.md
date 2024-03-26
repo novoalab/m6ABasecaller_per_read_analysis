@@ -42,7 +42,7 @@ Please follow the instructions on how to install modPhred [here](https://modphre
 
 #### a) All-in-one step solution: Base-call, store modification information and map with ModPhred (recommended option)
 Download the basecalling model rna_r9.4.1_70bps_m6A_hac.cfg and place it in your guppy folder at ont-guppy/data/.
-This option is suggested to save space (does not write basecalled fast5 files) and time, but please consider that if you need to run other software that requires basecalled fast5 files (i.e. based on nanopolish or tailfindr) it would be better to use options b/c. 
+This option is suggested to save space (does not write basecalled fast5 files) and time, but please consider that if you need to run other software that requires basecalled fast5 files (i.e. polyA tail estimation based on nanopolish, which you might want to run for further per read m6A-polyA tail length analysis) it would be better to use options b/c. 
 
 Here we use the tool [ModPhred](https://github.com/novoalab/modPhred) to base-call, encode m6A RNA modification and map the reads in a simple, and efficient manner, with a single command, making it very simple for the user to use alternative basecalling models.  modPhred performs the base-calling step using Guppy, and here we show how to run it with GPU (highly recommended for a faster computation). The data is stored both in the FASTQ and BAM files, in the QUALITY INFORMATION. Please note that with this option you are not going to save basecalled fast5 files! 
 
