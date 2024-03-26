@@ -38,7 +38,8 @@ Please follow the instructions on how to install modPhred [here](https://modphre
 
 ## Running the code
 
-![scheme_m6ABC-01](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/2ba92938-8a41-450d-8ece-5b38c5434c71)
+![scheme_m6ABC-01](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/e342b977-f684-4895-8740-a24b76c5dfcb)
+
 
 
 
