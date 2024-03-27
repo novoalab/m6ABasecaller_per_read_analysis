@@ -58,7 +58,7 @@ Note: the program does not require a matching number of replicates per condition
 
 * Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
 ```python
-python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed
+python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -gtf your_gene_annotation.gtf
 ```
 
 *  Example 2: changing the coverage threshold (otherwise, default:50)
