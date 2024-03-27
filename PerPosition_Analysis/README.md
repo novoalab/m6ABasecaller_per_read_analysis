@@ -63,12 +63,12 @@ python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 c
 
 *  Example 2: changing the coverage threshold (otherwise, default:50)
 ```python
-python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed -cov 30
+python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -gtf your_gene_annotation.gtf -cov 30
 ```
 
 * Example 3: run the program in *decay* mode: it will consider a site valid if it has enough coverage in all replicates from at least one of the conditions (ie: WT or KO). Default: sites are valid when there is enough coverage across all the samples. 
 ```python
-python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -bed gene_coordinates_with_gene_names.bed -decay
+python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -gtf your_gene_annotation.gtf -decay
 ```
 
 ### 1.3. Expected output:
