@@ -31,10 +31,14 @@ optional arguments:
   -c CONDITIONS [CONDITIONS ...], --conditions CONDITIONS [CONDITIONS ...]
                         Conditions included in the analysis. ie: WT, KO.
   -s SAMPLES [SAMPLES ...], --samples SAMPLES [SAMPLES ...]
-                        Samples included in the analysis. ie: WT1, WT2, KO1,
-                        KO2. They should go in the same order in which you have them listed in the columns of the mod.gz
+                        Samples included in the analysis. 
+                        They should go in the same order in which you
+                        have them listed in the columns of the mod.gz
+                        ie: WT1, WT2, KO1, KO2.
   -l LABELS [LABELS ...], --labels LABELS [LABELS ...]
-                        Group in which the sample is included, referring to the order in which you have listed the conditions. ie: 1, 1, 2, 2 for WT,WT,KO,KO
+                        Group in which the sample is included, referring to
+                        the order in which you have listed the conditions.
+                        ie: 1, 1, 2, 2 for WT,WT,KO,KO
   -gtf GTF_FILE, --gtf_file GTF_FILE
                         Gtf file with genes to annotate the replicable m6A
                         sites (*.gtf).
