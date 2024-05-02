@@ -13,13 +13,15 @@ The m6ABasecaller allows to directly base-call m6A RNA modifications in **indivi
 - [General Description](#General-description)
 - [Installation](#Installation)
 - [Running the code](#Running-the-code)
+	- [Suggested option: m6A basecalling and modification encoding with Master of Pores](#suggested-option-m6a-basecalling-and-modification-encoding-with-master-of-pores)
+	- [Step by step options](#step-by-step-options)
 	- [1. Basecalling with m6A basecalling model](#1-basecalling-with-m6A-basecalling-model)
 	- [2. Extract m6A information with modPhred](#2-extract-m6A-information-with-modphred)
 	- [3. Analysis of m6ABasecaller results at per-site level](#3-analysis-of-m6abasecaller-results-at-per-site-level)
 	- [4. Analysis of m6ABasecaller results at per-read level](#4-analysis-of-m6abasecaller-results-at-per-read-level)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
-- [Contact](#Contact) 
+- [Contact](#Contact)
 
 
 ## General Description
@@ -41,8 +43,19 @@ Please follow the instructions on how to install modPhred [here](https://modphre
 ![scheme_m6ABC-01](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/e342b977-f684-4895-8740-a24b76c5dfcb)
 
 
+### Suggested option: m6A basecalling and modification encoding with Master of Pores
 
+All the software you need and the m6A basecalling model are in [Master of Pores](https://biocorecrg.github.io/MoP3/install.html), please follow the "Get Started" instructions to install Master of Pores and guppy (any guppy version between 3.4.5 and 6.0.6 worked in our hands - it does not really matter as you are providing the basecalling model).
+The m6A basecalling process will be performed by the mop_preprocess module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_preprocess.html)). 
+For m6A basecalling in your params.f5.yaml file you should specify ``basecalling: "guppy"`` and ``pars_tools: "tool_opts/drna_tool_m6A_splice_opt.tsv" `` so that guppy will use the m6A model. In your output folder you will have the ``fast5_files`` folder containing the m6A basecalled fast5 files for downstream analysis.
+The encoding of modification information will be performed by the mop_mod module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_mod.html)). In the params.yaml you should specify ``modphred: "YES"``.
 
+modPhred will generate fastq and fastm files and align them to the reference with minimap2. It will store modification information both in the FASTQ and BAM files, in the QUALITY INFORMATION.
+modPhred will produce a mod.gz output file that contains all the sites that were found with at least 25 reads of coverage and at least 5% modification frequency in one sample, with information about coverage, modification probability, modification frequency and basecalling accuracy for each sample. For more information on the output see [https://modphred.readthedocs.io/en/latest/output.html](https://modphred.readthedocs.io/en/latest/output.html)
+
+Once you have the mod.gz file, you can proceed to [3. Analysis of m6ABasecaller results at per-site level](#3-analysis-of-m6abasecaller-results-at-per-site-level)
+
+### Step by step options
 
 ### 1. Basecalling with m6A basecalling model
 
