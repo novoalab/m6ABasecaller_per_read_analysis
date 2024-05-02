@@ -17,8 +17,8 @@ The m6ABasecaller allows to directly base-call m6A RNA modifications in **indivi
 	- [Step by step options](#step-by-step-options)
 		- [1. Basecalling with m6A basecalling model](#1-basecalling-with-m6A-basecalling-model)
 		- [2. Extract m6A information with modPhred](#2-extract-m6A-information-with-modphred)
-	- [3. Analysis of m6ABasecaller results at per-site level](#3-analysis-of-m6abasecaller-results-at-per-site-level)
-	- [4. Analysis of m6ABasecaller results at per-read level](#4-analysis-of-m6abasecaller-results-at-per-read-level)
+	- [Analysis of m6ABasecaller results at per-site level](#analysis-of-m6abasecaller-results-at-per-site-level)
+	- [Analysis of m6ABasecaller results at per-read level](#analysis-of-m6abasecaller-results-at-per-read-level)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
 - [Contact](#Contact)
@@ -137,12 +137,12 @@ modPhred will produce a mod.gz output file that contains all the sites that were
 
 
 
-### 3. Analysis of m6ABasecaller results at per-site level
+### Analysis of m6ABasecaller results at per-site level
 
 Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at per-site level. 
 
 
-### 4. Analysis of m6ABasecaller results at per-read level
+### Analysis of m6ABasecaller results at per-read level
 
 Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at per-read level. 
 
