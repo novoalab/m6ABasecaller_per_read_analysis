@@ -1,4 +1,4 @@
-<img align="right" height="70" src="/img/logo_m6ABC">
+<img align="right" height="70" src="/img/logo_m6ABC.png">
 
 
 # m6ABasecaller
