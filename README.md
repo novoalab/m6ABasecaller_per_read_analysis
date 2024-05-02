@@ -1,6 +1,7 @@
-# m6ABasecaller
+<img align="right" height="70" src="/img/logo_m6ABC">
 
-![alt text](./img/logo_m6ABC.jpg "m6ABC_logo")
+
+# m6ABasecaller
 
 Welcome to the m6ABasecaller GitHub repo!! 
 
