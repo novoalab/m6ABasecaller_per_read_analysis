@@ -5,7 +5,7 @@
 
 Welcome to the m6ABasecaller GitHub repo!! 
 
-The m6ABasecaller allows to directly base-call m6A RNA modifications in **individual reads**, with **single nucleotide resolution**, from direct RNA sequencing nanopore raw FAST5 files, without the need of paired 'control' conditions (knockout, knockout, etc). 
+The m6ABasecaller allows to directly base-call m6A RNA modifications in **individual reads**, with **single nucleotide resolution**, from direct RNA sequencing nanopore raw FAST5 files, without the need of paired 'control' conditions (knockout, knock down, etc). 
 
 ![image-for-github-01](https://github.com/novoalab/m6ABasecaller/assets/44866316/37b99742-53a1-4079-a67e-3043d24905c7)
 
@@ -35,7 +35,6 @@ This repo includes command line examples and scripts to:
 
 ## Installation 
 
-Please follow the instructions on how to install modPhred [here](https://modphred.readthedocs.io/en/latest/install.html).
 
 ## Running the code
 There are 3 possible options to run the code:
@@ -89,7 +88,8 @@ guppy_basecaller –i path/to/sample/fast5 –s path/to/sample/output –c ont-g
 
 #### step II - Modification encoding with modPhred
 
-Here we use the tool [ModPhred](https://modphred.readthedocs.io/en/latest) to encode m6A RNA modification and map the reads, you can install it by cloning the [github repo](https://github.com/novoalab/modPhred).  
+Here we use the tool [ModPhred](https://modphred.readthedocs.io/en/latest) to encode m6A RNA modification and map the reads, please follow the instructions on how to install modPhred [here](https://modphred.readthedocs.io/en/latest/install.html).
+
 
 modPhred will generate fastq and fastm files and align them to the reference with minimap2. It will store modification information both in the FASTQ and BAM files, in the QUALITY INFORMATION.
 
@@ -120,7 +120,9 @@ For more details on how to use ModPhred, please see the [GitHub](https://github.
 Download the basecalling model rna_r9.4.1_70bps_m6A_hac.cfg and place it in your guppy folder at ont-guppy/data/.
 This option is suggested to save space (does not write basecalled fast5 files) and time, but please consider that if you need to run other software that requires basecalled fast5 files (i.e. polyA tail estimation based on nanopolish, which you might want to run for further per read m6A-polyA tail length analysis) it would be better to use options 1/2. 
 
-Here we use the tool [ModPhred](https://github.com/novoalab/modPhred) to base-call, encode m6A RNA modification and map the reads in a simple, and efficient manner, with a single command, making it very simple for the user to use alternative basecalling models.  modPhred performs the base-calling step using Guppy, and here we show how to run it with GPU (highly recommended for a faster computation). The data is stored both in the FASTQ and BAM files, in the QUALITY INFORMATION. Remember that with this option you are not going to save basecalled fast5 files! 
+Here we use the tool [ModPhred](https://github.com/novoalab/modPhred) to base-call, encode m6A RNA modification and map the reads in a simple, and efficient manner, with a single command, making it very simple for the user to use alternative basecalling models. Please follow the instructions on how to install modPhred [here](https://modphred.readthedocs.io/en/latest/install.html).
+
+modPhred performs the base-calling step using Guppy, and here we show how to run it with GPU (highly recommended for a faster computation). The data is stored both in the FASTQ and BAM files, in the QUALITY INFORMATION. Remember that with this option you are not going to save basecalled fast5 files! 
 
 For this option you need to download a singularity image with everything you need for ModPhred, we suggest to download it inside modPhred folder:
 
