@@ -63,7 +63,7 @@ cd mop_preprocess
 nextflow run mop_preprocess.nf -params-file params.f5.yaml -with-singularity -bg > yourlog.txt
 ```
 
-#### step II - Modification encoding with mop_mod module
+#### Step II - Modification encoding with mop_mod module
 
 The encoding of modification information will be performed by the mop_mod module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_mod.html)). In the ``params.yaml`` you should specify ``modphred: "YES"`` (see example file in Master_Of_Pores_params). Then run:
 
@@ -117,7 +117,7 @@ singularity exec modPhred/modphred-3.6.1.sif modPhred/run -f reference.fa -o m6A
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred) repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
 
 
-### Option 3: modPhred on-the-fly
+### Option 3: ModPhred on-the-fly
 Download the basecalling model rna_r9.4.1_70bps_m6A_hac.cfg and place it in your guppy folder at ont-guppy/data/.
 This option is suggested to save space (does not write basecalled fast5 files) and time, but please consider that if you need to run other software that requires basecalled fast5 files (i.e. polyA tail estimation based on nanopolish, which you might want to run for further per read m6A-polyA tail length analysis) it would be better to use options 1/2. 
 
@@ -146,7 +146,7 @@ singularity exec --nv modPhred/modphred-3.6.1.sif modPhred/run -c ont-guppy/data
 
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred) repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
 
-### Expected Output and Downstream Analyses
+## Expected Output and Downstream Analyses
 
 In all  3 options, ModPhred will generate fastq and fastm files and align them to the reference with minimap2. It will store modification information both in the FASTQ and BAM files, in the QUALITY INFORMATION.
 
