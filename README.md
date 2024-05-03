@@ -164,7 +164,7 @@ Once you have the ``mod.gz file``, you can proceed to analysis at per-site and p
 Software | Version 
 --- | ---
 Master of Pores | 3
-Guppy | any between 3.4.5 - 6.0.6
+Guppy | tested with 3.4.5 and 6.0.6
 ModPhred | 1.0b
 venn | 0.1.3
 pybedtools | 0.8.1
