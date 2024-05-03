@@ -14,12 +14,12 @@ The m6ABasecaller allows to directly base-call m6A RNA modifications in **indivi
 - [General Description](#General-description)
 - [Installation](#Installation)
 - [Running the code](#Running-the-code)
-	- [Option 1 (Suggested): m6A basecalling and modification encoding with Master of Pores](#option-1-(suggested)-m6a-basecalling-and-modification-encoding-with-master-of-pores)
+	- [Option 1: m6A basecalling and modification encoding with Master of Pores](#option-1-m6a-basecalling-and-modification-encoding-with-master-of-pores)
 	- [Option 2: Basecalling with m6A basecalling model and modification encoding with modPhred](#option-2-basecalling-with-m6A-basecalling-model-and-modification-encoding-with-modphred)
 	- [Option 3: modPhred on-the-fly](#option-3-modphred-on-the-fly)
- 	- [m6ABasecaller Output](#m6abasecaller-output)
-	- [Analysis of m6ABasecaller results at per-site level](#analysis-of-m6abasecaller-results-at-per-site-level)
-	- [Analysis of m6ABasecaller results at per-read level](#analysis-of-m6abasecaller-results-at-per-read-level)
+- [m6ABasecaller Output](#m6abasecaller-output)
+- [Analysis of m6ABasecaller results at per-site level](#analysis-of-m6abasecaller-results-at-per-site-level)
+- [Analysis of m6ABasecaller results at per-read level](#analysis-of-m6abasecaller-results-at-per-read-level)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
 - [Contact](#Contact)
@@ -40,15 +40,21 @@ This repo includes command line examples and scripts to:
 Please follow the instructions on how to install modPhred [here](https://modphred.readthedocs.io/en/latest/install.html).
 
 ## Running the code
+There are 3 possible options to run the code:
+
+ - [Option 1 : Master of Pores Nextflow workflow](#option-1-(suggested)-m6a-basecalling-and-modification-encoding-with-master-of-pores). This is the **recommended** option, as it does not require any software/dependencies to be installed by the user.
+- [Option 2: Basecalling with m6ABasecaller model + modification encoding with modPhred](#option-2-basecalling-with-m6A-basecalling-model-and-modification-encoding-with-modphred)
+- [Option 3: ModPhred on the fly](#option-3-modphred-on-the-fly)
 
 ![scheme_m6ABC-01](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/e342b977-f684-4895-8740-a24b76c5dfcb)
 
 
-### Option 1 (Suggested): m6A basecalling and modification encoding with Master of Pores
+### Option 1 : m6A basecalling and modification encoding with Master of Pores
+This is the **RECOMMENDED** option
 
 All the software you need and the m6A basecalling model are in [Master of Pores](https://biocorecrg.github.io/MoP3/install.html), please follow the "Get Started" instructions to install Master of Pores and guppy (any guppy version between 3.4.5 and 6.0.6 worked in our hands - it does not really matter as you are providing the basecalling model).
 
-#### step I - Basecalling with mop_preprocess module
+#### Step I - Basecalling with mop_preprocess module
 
 The m6A basecalling process will be performed by the mop_preprocess module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_preprocess.html)). 
 
@@ -72,7 +78,7 @@ nextflow run mop_mod.nf -params-file params.yaml -with-singularity -bg > yourlog
 
 ### Option 2: Basecalling with m6A basecalling model and modification encoding with modPhred
 
-#### step I - Basecalling with m6A basecalling model 
+#### Step I - Basecalling with m6A basecalling model 
 
 Download the basecalling model rna_r9.4.1_70bps_m6A_hac.cfg and place it in your guppy folder at ont-guppy/data/.
 You may use this model standalone with Guppy, and then use megalodon or modPhred to extract and process the RNA modification information. Please note that if you use megalodon, your RNA modification information will be encoded in the form of SAM tags. If you use modPhred, your RNA modification information will be encoded in the quality of the FASTQ and BAM (future version of ModPhred will allow to encode modification information directly in SAM tags). In this work, all data was basecalled with Guppy 3.4.5, but other Guppy versions can work as well as the model provided is custom.
