@@ -49,7 +49,7 @@ There are 3 possible options to run the code:
 ![scheme_m6ABC-01](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/e342b977-f684-4895-8740-a24b76c5dfcb)
 
 
-### Option 1 : m6A basecalling and modification encoding with Master of Pores
+### Option 1: m6A basecalling and modification encoding with Master of Pores
 This is the **RECOMMENDED** option
 
 All the software you need and the m6A basecalling model are in [Master of Pores](https://biocorecrg.github.io/MoP3/install.html), please follow the "Get Started" instructions to install Master of Pores and guppy (any guppy version between 3.4.5 and 6.0.6 worked in our hands - it does not really matter as you are providing the basecalling model).
