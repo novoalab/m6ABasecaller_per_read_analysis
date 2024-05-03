@@ -152,7 +152,7 @@ In all  3 options, ModPhred will generate fastq and fastm files and align them t
 
 modPhred will also produce a ``mod.gz`` output file that contains all the sites that were found with at least 25 reads of coverage and at least 5% modification frequency in one sample, with information about coverage, modification probability, modification frequency and basecalling accuracy for each sample. For more information on the output see [https://modphred.readthedocs.io/en/latest/output.html](https://modphred.readthedocs.io/en/latest/output.html)
 
-Once you have the ``mod.gz file``, you can proceed to [Analysis of m6ABasecaller results at per-site level](#analysis-of-m6abasecaller-results-at-per-site-level)
+Once you have the ``mod.gz file``, you can proceed to analysis at per-site and per-read levels:
 
 * Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at **per-site level**. 
 
