@@ -113,7 +113,7 @@ singularity exec modPhred/modphred-3.6.1.sif modPhred/run -f reference.fa -o m6A
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred) repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
 
 
-#### Option 3: modPhred on-the-fly
+### Option 3: modPhred on-the-fly
 Download the basecalling model rna_r9.4.1_70bps_m6A_hac.cfg and place it in your guppy folder at ont-guppy/data/.
 This option is suggested to save space (does not write basecalled fast5 files) and time, but please consider that if you need to run other software that requires basecalled fast5 files (i.e. polyA tail estimation based on nanopolish, which you might want to run for further per read m6A-polyA tail length analysis) it would be better to use options 1/2. 
 
