@@ -48,7 +48,7 @@ Please follow the instructions on how to install modPhred [here](https://modphre
 
 All the software you need and the m6A basecalling model are in [Master of Pores](https://biocorecrg.github.io/MoP3/install.html), please follow the "Get Started" instructions to install Master of Pores and guppy (any guppy version between 3.4.5 and 6.0.6 worked in our hands - it does not really matter as you are providing the basecalling model).
 
-## step I - Basecalling with mop_preprocess module
+#### step I - Basecalling with mop_preprocess module
 
 The m6A basecalling process will be performed by the mop_preprocess module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_preprocess.html)). 
 
@@ -59,7 +59,7 @@ cd mop_preprocess
 nextflow run mop_preprocess.nf -params-file params.f5.yaml -with-singularity -bg > yourlog.txt
 ```
 
-## step II - Modification encoding with mop_mod module
+#### step II - Modification encoding with mop_mod module
 
 The encoding of modification information will be performed by the mop_mod module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_mod.html)). In the ``params.yaml`` you should specify ``modphred: "YES"`` (see example file). Then run:
 
@@ -72,7 +72,7 @@ nextflow run mop_mod.nf -params-file params.yaml -with-singularity -bg > yourlog
 
 ### Option 2: Basecalling with m6A basecalling model and modification encoding with modPhred
 
-## step I - Basecalling with m6A basecalling model 
+#### step I - Basecalling with m6A basecalling model 
 
 Download the basecalling model rna_r9.4.1_70bps_m6A_hac.cfg and place it in your guppy folder at ont-guppy/data/.
 You may use this model standalone with Guppy, and then use megalodon or modPhred to extract and process the RNA modification information. Please note that if you use megalodon, your RNA modification information will be encoded in the form of SAM tags. If you use modPhred, your RNA modification information will be encoded in the quality of the FASTQ and BAM (future version of ModPhred will allow to encode modification information directly in SAM tags). In this work, all data was basecalled with Guppy 3.4.5, but other Guppy versions can work as well as the model provided is custom.
@@ -84,7 +84,7 @@ Usage:
 guppy_basecaller –i path/to/sample/fast5 –s path/to/sample/output –c ont-guppy/data/rna_r9.4.1_70bps_m6A_hac.cfg
 ```
 
-## step II - Modification encoding with modPhred
+#### step II - Modification encoding with modPhred
 
 Here we use the tool [ModPhred](https://modphred.readthedocs.io/en/latest) to encode m6A RNA modification and map the reads, you can install it by cloning the [github repo](https://github.com/novoalab/modPhred).  
 
