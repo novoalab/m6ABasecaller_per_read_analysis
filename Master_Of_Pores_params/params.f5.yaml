@@ -1,7 +1,7 @@
 # Parameters
 
 # Needed for fast5 input
-fast5: "/no_backup/enovoa/nextflow_outputs/Yeast_Ime4KO_2024/RNA002/human_m6A_model/fast5_files/KO2/*.fast5"
+fast5: "/path/to/raw/fast5/files/*.fast5"
 ## This can be empty but then you need to add specify kit and flowcell via command line inside pars_tools
 conffile: ""
 ## Can be wither guppy or dorado
@@ -19,12 +19,12 @@ barcodes: ""
 fastq: ""
 
 # Common
-reference: "/no_backup/enovoa/reference_fasta/SK1_/Yeast_sk1.fa"
+reference: ""
 ## Can be transcriptome / genome
-ref_type: "genome"
-annotation: "/no_backup/enovoa/reference_fasta/SK1_/anotation_from_james_Robinson_IGV_2017/sk1.gff3"
+ref_type: ""
+annotation: ""
 ## command line options
-pars_tools: "tool_opts/drna_tool_seqtaggerbc4RNA002_m6Ayeast_splice_opt.tsv"
+pars_tools: "tool_opts/drna_tool_m6A_splice_opt.tsv"
 ## Cut off quality for QC
 qualityqc: 5
 ## Can be nanoq / nanofilt
@@ -40,4 +40,4 @@ cram_conv: "NO"
 subsampling_cram: 50
 hook: ""
 email: ""
-output: "/no_backup/enovoa/nextflow_outputs/Yeast_Ime4KO_2024/RNA002/yeast_m6A_model/KO2"
+output: "/path/to/your/output/folder"
