@@ -17,9 +17,7 @@ The m6ABasecaller allows to directly base-call m6A RNA modifications in **indivi
 	- [Option 1: m6A basecalling and modification encoding with Master of Pores](#option-1-m6a-basecalling-and-modification-encoding-with-master-of-pores)
 	- [Option 2: Basecalling with m6A basecalling model and modification encoding with modPhred](#option-2-basecalling-with-m6A-basecalling-model-and-modification-encoding-with-modphred)
 	- [Option 3: modPhred on-the-fly](#option-3-modphred-on-the-fly)
-- [m6ABasecaller Output](#m6abasecaller-output)
-- [Analysis of m6ABasecaller results at per-site level](#analysis-of-m6abasecaller-results-at-per-site-level)
-- [Analysis of m6ABasecaller results at per-read level](#analysis-of-m6abasecaller-results-at-per-read-level)
+- [Expected Output and Downstream Analyses](#Expected-output-and-downstream-analyses)
 - [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
 - [Contact](#Contact)
@@ -148,23 +146,17 @@ singularity exec --nv modPhred/modphred-3.6.1.sif modPhred/run -c ont-guppy/data
 
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred) repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
 
-### m6ABasecaller Output
+### Expected Output and Downstream Analyses
 
-In all the 3 options, modPhred will generate fastq and fastm files and align them to the reference with minimap2. It will store modification information both in the FASTQ and BAM files, in the QUALITY INFORMATION.
+In all  3 options, ModPhred will generate fastq and fastm files and align them to the reference with minimap2. It will store modification information both in the FASTQ and BAM files, in the QUALITY INFORMATION.
 
 modPhred will also produce a ``mod.gz`` output file that contains all the sites that were found with at least 25 reads of coverage and at least 5% modification frequency in one sample, with information about coverage, modification probability, modification frequency and basecalling accuracy for each sample. For more information on the output see [https://modphred.readthedocs.io/en/latest/output.html](https://modphred.readthedocs.io/en/latest/output.html)
 
 Once you have the ``mod.gz file``, you can proceed to [Analysis of m6ABasecaller results at per-site level](#analysis-of-m6abasecaller-results-at-per-site-level)
 
+* Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at **per-site level**. 
 
-### Analysis of m6ABasecaller results at per-site level
-
-Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at per-site level. 
-
-
-### Analysis of m6ABasecaller results at per-read level
-
-Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at per-read level. 
+* Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at **per-read level**. 
 
 
 ## Dependencies and versions
