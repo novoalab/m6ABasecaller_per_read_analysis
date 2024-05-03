@@ -44,8 +44,7 @@ There are 3 possible options to run the code:
 - [Option 2: Basecalling with m6ABasecaller model + modification encoding with modPhred](#option-2-basecalling-with-m6A-basecalling-model-and-modification-encoding-with-modphred)
 - [Option 3: ModPhred on the fly](#option-3-modphred-on-the-fly)
 
-![scheme_m6ABC-01](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/e342b977-f684-4895-8740-a24b76c5dfcb)
-
+![scheme_m6ABC_v2-01](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/f66a3c45-9d0e-413e-8ee4-1436471d5140)
 
 ### Option 1: m6A basecalling and modification encoding with Master of Pores
 This is the **RECOMMENDED** option
