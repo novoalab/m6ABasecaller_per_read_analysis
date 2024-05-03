@@ -52,7 +52,7 @@ All the software you need and the m6A basecalling model are in [Master of Pores]
 
 The m6A basecalling process will be performed by the mop_preprocess module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_preprocess.html)). 
 
-For m6A basecalling in your ``params.f5.yaml`` file you should specify ``basecalling: "guppy"`` and ``pars_tools: "tool_opts/drna_tool_m6A_splice_opt.tsv" `` so that guppy will use the m6A model. In your output folder you will have the ``fast5_files`` folder containing the m6A basecalled fast5 files for downstream analysis (see example file). Then run: 
+For m6A basecalling in your ``params.f5.yaml`` file you should specify ``basecalling: "guppy"`` and ``pars_tools: "tool_opts/drna_tool_m6A_splice_opt.tsv" `` so that guppy will use the m6A model. In your output folder you will have the ``fast5_files`` folder containing the m6A basecalled fast5 files for downstream analysis (see example file in Master_Of_Pores_params). Then run: 
 
 ```
 cd mop_preprocess
@@ -61,7 +61,7 @@ nextflow run mop_preprocess.nf -params-file params.f5.yaml -with-singularity -bg
 
 #### step II - Modification encoding with mop_mod module
 
-The encoding of modification information will be performed by the mop_mod module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_mod.html)). In the ``params.yaml`` you should specify ``modphred: "YES"`` (see example file). Then run:
+The encoding of modification information will be performed by the mop_mod module (see documentation [here](https://biocorecrg.github.io/MoP3/mop_mod.html)). In the ``params.yaml`` you should specify ``modphred: "YES"`` (see example file in Master_Of_Pores_params). Then run:
 
 
 ```
