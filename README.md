@@ -35,6 +35,7 @@ This repo includes command line examples and scripts to:
 
 ## Installation 
 
+Clone this repository in order to have the m6A basecalling model and the scripts for the m6A analysis at per position and per read level.
 
 ## Running the code
 There are 3 possible options to run the code:
@@ -43,7 +44,7 @@ There are 3 possible options to run the code:
 - [Option 2: Basecalling with m6ABasecaller model + modification encoding with modPhred](#option-2-basecalling-with-m6A-basecalling-model-and-modification-encoding-with-modphred)
 - [Option 3: ModPhred on the fly](#option-3-modphred-on-the-fly)
 
-![scheme_m6ABC_v2-01](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/f66a3c45-9d0e-413e-8ee4-1436471d5140)
+![scheme_m6ABC_v2-01](https://github.com/novoalab/m6ABasecaller_dev/assets/44866316/f7da6a57-43e5-40ac-a2a7-42e07b18d912)
 
 ### Option 1: m6A basecalling and modification encoding with Master of Pores
 This is the **RECOMMENDED** option
