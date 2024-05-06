@@ -76,7 +76,7 @@ cd mop_mod
 nextflow run mop_mod.nf -params-file params.yaml -with-singularity -bg > yourlog.txt
 ```
 
-##### Dependencies and versions
+##### Dependencies and versions for Option 1:
 
 Software | Version 
 --- | ---
@@ -129,7 +129,7 @@ singularity exec modPhred/modphred-3.6.1.sif modPhred/run -f reference.fa -o m6A
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred) repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
 
 
-##### Dependencies and versions
+##### Dependencies and versions for Option 2:
 
 Software | Version 
 --- | ---
@@ -168,7 +168,7 @@ singularity exec --nv modPhred/modphred-3.6.1.sif modPhred/run -c ont-guppy/data
 
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred) repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
 
-##### Dependencies and versions
+##### Dependencies and versions for Option 3:
 
 Software | Version 
 --- | ---
