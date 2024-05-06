@@ -37,7 +37,9 @@ This repo includes command line examples and scripts to:
 
 Clone this repository in order to have the m6A basecalling model and the scripts for the m6A analysis at per position and per read level.
 
-``git clone https://github.com/novoalab/m6ABasecaller_dev.git``
+```
+git clone https://github.com/novoalab/m6ABasecaller_dev.git
+```
 
 ## Running the code
 There are 3 possible options to run the code:
