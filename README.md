@@ -18,7 +18,6 @@ The m6ABasecaller allows to directly base-call m6A RNA modifications in **indivi
 	- [Option 2: Basecalling with m6A basecalling model and modification encoding with modPhred](#option-2-basecalling-with-m6A-basecalling-model-and-modification-encoding-with-modphred)
 	- [Option 3: modPhred on-the-fly](#option-3-modphred-on-the-fly)
 - [Expected Output and Downstream Analyses](#Expected-output-and-downstream-analyses)
-- [Dependencies and versions](#Dependencies-and-versions)
 - [Citation](#Citation) 
 - [Contact](#Contact)
 
@@ -77,6 +76,15 @@ cd mop_mod
 nextflow run mop_mod.nf -params-file params.yaml -with-singularity -bg > yourlog.txt
 ```
 
+##### Dependencies and versions
+
+Software | Version 
+--- | ---
+Nextflow | 23.04
+Singularity | 3.2.1
+Master of Pores | 3
+Guppy | tested with 3.4.5 and 6.0.6
+
 
 ### Option 2: Basecalling with m6A basecalling model and modification encoding with modPhred
 
@@ -114,12 +122,20 @@ Usage:
 -o: path to output folder
 -i: path to input folders (containing the m6A basecalled fast5 files). You can provide >=1 input folders
 
-module load Singularity/3.2.1
 singularity exec modPhred/modphred-3.6.1.sif modPhred/run -f reference.fa -o m6A_basecaller -i path/to/sample1_m6Abasecalled_fast5_files  path/to/sample2_m6Abasecalled_fast5_files   path/to/sample3_m6Abasecalled_fast5_files  
 
 ```
 
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred) repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
+
+
+##### Dependencies and versions
+
+Software | Version 
+--- | ---
+Singularity | 3.2.1
+Guppy | tested with 3.4.5 and 6.0.6
+modPhred | 1.0b
 
 
 ### Option 3: ModPhred on-the-fly
@@ -146,12 +162,20 @@ Usage:
 -i: path to input folders (containing the fast5 files). You can provide >=1 input folders
 [--nv is to use singularity in a GPU node]
 
-module load Singularity/3.2.1
 singularity exec --nv modPhred/modphred-3.6.1.sif modPhred/run -c ont-guppy/data/rna_r9.4.1_70bps_m6A_hac.cfg --host soft/ont-guppy/bin/guppy_basecall_server -f reference.fa -o m6A_basecaller -i path/to/sample1  path/to/sample2  path/to/sample3 
 
 ```
 
 For more details on how to use ModPhred, please see the [GitHub](https://github.com/novoalab/modPhred) repository and the [ReadTheDocs](https://modphred.readthedocs.io/en/latest/install.html) manual.
+
+##### Dependencies and versions
+
+Software | Version 
+--- | ---
+Singularity | 3.2.1
+Guppy | tested with 3.4.5 and 6.0.6
+modPhred | 1.0b
+
 
 ## Expected Output and Downstream Analyses
 
@@ -165,17 +189,6 @@ Once you have the ``mod.gz file``, you can proceed to analysis at per-site and p
 
 * Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at **per-read level**. 
 
-
-## Dependencies and versions
-
-Software | Version 
---- | ---
-Master of Pores | 3
-Guppy | tested with 3.4.5 and 6.0.6
-ModPhred | 1.0b
-venn | 0.1.3
-pybedtools | 0.8.1
-meme | 4.11.2
 
 ## Citation
   
