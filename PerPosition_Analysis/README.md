@@ -103,7 +103,7 @@ python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 c
 
 
 
-## Dependencies and Versions for ModPhred_PostProcessing.py 
+### Dependencies and Versions for ModPhred_PostProcessing.py 
 
 Software | Version 
 --- | ---
