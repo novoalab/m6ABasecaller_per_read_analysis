@@ -102,6 +102,20 @@ python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 c
 - Bedgraph with modification frequency difference between condition 1 (reference) and condition 2 per m6A position
 
 
+
+## Dependencies and Versions for ModPhred_PostProcessing.py 
+
+Software | Version 
+--- | ---
+pandas | 2.2.1
+seaborn | 0.12.2
+scipy | 1.12.0
+venn | 0.1.3
+numpy | 1.26.4
+pybedtools | 0.8.1
+meme | 4.11.2
+
+
 ## 2. Generation of metagene plots from m6ABasecaller results
 
 First, you'll need to install dependencies: 
@@ -129,3 +143,6 @@ The script m6ABC_SCATTERPLOT_M6A_FREQUENCY.R contains the code to produce the sc
 ## 4. Generation of density plots from m6ABasecaller results (for comparison) 
 
 The script m6ABC_DENSITY_PLOT_M6A_FREQUENCY.R contains the code to produce the density plots for comparing between samples. Please refer to the comments in the script for further detail.
+
+
+
