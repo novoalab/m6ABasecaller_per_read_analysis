@@ -3,14 +3,26 @@
 ModPhred outputs a file containing all sites that have a coverage of at least 25 reads and a modification frequency of 5% in at least one of the samples included in the analysis. It is called `mod.gz` and it is processed to obtain replicable m6A sites at per position level among other types of information. 
 
 ## Table of contents
-- [1. Processing ModPhred output](#1-Processing-ModPhred-output)
-- [2. Generation of metagene plots from m6ABasecaller results](#2-Generation-of-metagene-plots-from-m6ABasecaller-results)
+- [1. Running ModPhred on m6A basecalled fast5 files with 0.5 and 0.1 modprob threshold](#1-Running-ModPhred-on-m6A-basecalled-fast5-files-with-0.5-and-0.1-modprob-threshold)
+- [2. Processing ModPhred output](#2-Processing-ModPhred-output)
+- [3. Generation of metagene plots from m6ABasecaller results](#3-Generation-of-metagene-plots-from-m6ABasecaller-results)
 
-## 1. Processing ModPhred output
+## 1.  Running ModPhred on m6A basecalled fast5 files with 0.5 and 0.1 modprob threshold
+
+We will need the 0.5 threshold for predicting sites with high specificity and the 0.1 for predicting the stoichiometry of the sites. This script will run modphred with both thresholds. 
+
+### 1.1 Usage: 
+
+```
+qsub run_modphred_05_01.sh
+
+```
+
+## 2. Processing ModPhred output
 
 To extract replicable sites from the `mod.gz` file as well as performing metagene and motif enrichment analysis, please use the script `ModPhred_PostProcessing.py`.
 
-### 1.1. Usage: 
+### 2.1. Usage: 
 
 ```
 ModPhred_PostProcessing.py [-h] [-i INPUT] [-o OUTPUT] [-r REFERENCE]
@@ -58,7 +70,7 @@ optional arguments:
 Note: the program does not require a matching number of replicates per condition (i.e. you can have 2 reps for WT and 3 for KO)
 
 
-### 1.2. Examples:
+### 2.2. Examples:
 
 * Example 1: processing the demo data (2replicates, WT and KO conditions, default parameter settings)
 ```python
@@ -75,7 +87,7 @@ python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 c
 python ModPhred_PostProcessing.py -i mod.gz -s condition1_rep1 condition1_rep2 condition2_rep1 condition2_rep2 -c condition1 condition2 -l 1 1 2 2  -o Experiment_Name -gtf your_gene_annotation.gtf -decay
 ```
 
-### 1.3. Expected output:
+### 2.3. Expected output:
 
 #### Plots 
 
@@ -116,7 +128,7 @@ pybedtools | 0.8.1
 meme | 4.11.2
 
 
-## 2. Generation of metagene plots from m6ABasecaller results
+## 3. Generation of metagene plots from m6ABasecaller results
 
 First, you'll need to install dependencies: 
 ```bash
@@ -136,11 +148,11 @@ Expected output:
 
 ![image](https://user-images.githubusercontent.com/44866316/196667515-8d0993d9-249a-4f4f-bb5f-2233220a1bf4.png)
 
-## 3. Generation of scatterplots from m6ABasecaller results (for replicability or for comparison) 
+## 4. Generation of scatterplots from m6ABasecaller results (for replicability or for comparison) 
 
 The script m6ABC_SCATTERPLOT_M6A_FREQUENCY.R contains the code to produce the scatteplots for checking replicability between replicates (with spearson's coefficient) and for comparing between samples. Please refer to the comments in the script for further detail.
 
-## 4. Generation of density plots from m6ABasecaller results (for comparison) 
+## 5. Generation of density plots from m6ABasecaller results (for comparison) 
 
 The script m6ABC_DENSITY_PLOT_M6A_FREQUENCY.R contains the code to produce the density plots for comparing between samples. Please refer to the comments in the script for further detail.
 
