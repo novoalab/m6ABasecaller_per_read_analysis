@@ -1,23 +1,17 @@
-<img align="right" height="200" src="/img/logo_m6ABC.jpg">
-
-
 # 
 
 Welcome to the m6ABasecaller GitHub repo!! 
 
 The m6ABasecaller allows to directly base-call m6A RNA modifications in **individual reads**, with **single nucleotide resolution**, from direct RNA sequencing nanopore raw FAST5 files, without the need of paired 'control' conditions (knockout, knock down, etc). 
 
+<img align="right" height="200" src="/img/logo_m6ABC.jpg">
 ![image-for-github-01](https://github.com/novoalab/m6ABasecaller/assets/44866316/37b99742-53a1-4079-a67e-3043d24905c7)
 
 
 ## Table of contents
 - [General Description](#General-description)
 - [Installation](#Installation)
-- [Running the code](#Running-the-code)
-	- [Option 1: m6A basecalling and modification encoding with Master of Pores](#option-1-m6a-basecalling-and-modification-encoding-with-master-of-pores)
-	- [Option 2: Basecalling with m6A basecalling model and modification encoding with modPhred](#option-2-basecalling-with-m6A-basecalling-model-and-modification-encoding-with-modphred)
-	- [Option 3: modPhred on-the-fly](#option-3-modphred-on-the-fly)
-- [Expected Output and Downstream Analyses](#Expected-output-and-downstream-analyses)
+- [m6A Analysis](#m6a-analysis)
 - [Citation](#Citation) 
 - [Contact](#Contact)
 
