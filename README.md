@@ -42,7 +42,7 @@ Once you have the ``mod.gz file``, you can proceed to analysis at per-site and p
   
 If you find this work useful, please cite: 
 
-Cruciani S*, Novoa EM. In preparation 
+Cruciani S, Novoa EM. In preparation 
   
 ## Contact
 If you have any issues running this code, please go first over previous [issues](https://github.com/novoalab/m6ABasecaller/issues). If you still can't figure it out based on the prior responses/issues raised, please open a new issue. Thanks!   
