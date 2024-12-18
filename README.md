@@ -22,7 +22,7 @@ This repo includes command line examples and scripts to analyze the output gener
 Clone this repository in order to have the scripts for the m6A analysis at per position and per read level.
 
 ```
-git clone https://github.com/novoalab/m6A_Downstream.git
+git clone https://github.com/novoalab/m6ABC_Downstream.git
 ```
 
 ## m6A Analysis
