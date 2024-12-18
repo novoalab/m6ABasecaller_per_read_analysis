@@ -35,7 +35,7 @@ Once you have the ``mod.gz file``, you can proceed to analysis at per-site and p
 
 * Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at **per-site level**. 
 
-* Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at **per-read level**. 
+* Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at **per-read level**. This module depends on the output of the per-site level, so you will have to run them sequentially. 
 
 
 ## Citation
