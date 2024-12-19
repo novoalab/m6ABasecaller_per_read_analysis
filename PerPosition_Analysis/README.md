@@ -41,12 +41,12 @@ optional arguments:
   -r REFERENCE, --reference REFERENCE
                         Reference file (*.fa).
   -c CONDITIONS [CONDITIONS ...], --conditions CONDITIONS [CONDITIONS ...]
-                        Conditions included in the analysis. ie: WT, KO.
+                        Conditions included in the analysis. ie: WT, KO.  
   -s SAMPLES [SAMPLES ...], --samples SAMPLES [SAMPLES ...]
                         Samples included in the analysis. 
                         They should go in the same order in which you
                         have them listed in the columns of the mod.gz
-                        ie: WT1, WT2, KO1, KO2.
+                        ie: WT1, WT2, KO1, KO2. They have to contain the condition names! 
   -l LABELS [LABELS ...], --labels LABELS [LABELS ...]
                         Group in which the sample is included, referring to
                         the order in which you have listed the conditions.
