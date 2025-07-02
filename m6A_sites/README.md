@@ -8,8 +8,8 @@ In this folder, you can find the list of m6A sites predicted by m6ABasecaller in
 | File name (list of predicted m6A sites) | Method                            | Cell line       | Species | Device | Number of m6A sites | Study that produced the sequencing data | Genome annotation |
 |-----------------------------------------|-----------------------------------|-----------------|---------|------------|----------------------|-----------------------------------------|-------------------|
 | replicable_ESC_CTR_P2.bed | direct RNA (m6ABasecaller) | ESC | Mouse | P2 Solo |  | this work | mm10 |
-| replicable_ESC.bed | direct RNA (m6ABasecaller) | ESC | Mouse | MinION |  | this work | mm10 |
-| replicable_NPC.bed | direct RNA (m6ABasecaller) | NPC | Human | MinION |  | this work | mm10 |
-| replicable_Neuron.bed | direct RNA (m6ABasecaller) | Neuron | Mouse | MinION | | this work | mm10 |
+| replicable_ESC.bed | direct RNA (m6ABasecaller) | ESC | Mouse | MinION | 3840 | this work | mm10 |
+| replicable_NPC.bed | direct RNA (m6ABasecaller) | NPC | Human | MinION | 2857 | this work | mm10 |
+| replicable_Neuron.bed | direct RNA (m6ABasecaller) | Neuron | Mouse | MinION | 2292 | this work | mm10 |
 | replicable_Early_Activation.bed | direct RNA (m6ABasecaller) | Neuron | Mouse | MinION |  | this work | mm10 |
 | replicable_Late_Activation.bed | direct RNA (m6ABasecaller) | Neuron | Mouse | MinION |  | this work | mm10 |
