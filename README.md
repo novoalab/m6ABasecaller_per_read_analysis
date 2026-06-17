@@ -22,7 +22,7 @@ This repo includes command line examples and scripts to analyze the output gener
 Clone this repository in order to have the scripts for the m6A analysis at per position and per read level.
 
 ```
-git clone https://github.com/novoalab/m6ABC_Downstream.git
+git clone https://github.com/novoalab/m6ABasecaller_per_read_analysis.git
 ```
 
 ## m6A Analysis
@@ -33,9 +33,9 @@ modPhred will also produce a ``mod.gz`` output file that contains all the sites 
 
 Once you have the ``mod.gz file``, you can proceed to analysis at per-site and per-read levels:
 
-* Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at **per-site level**. 
+* Please see [this section](https://github.com/novoalab/m6ABasecaller_per_read_analysis/tree/main/PerPosition_Analysis) for details on how to analyze m6ABasecaller results at **per-site level**. 
 
-* Please see [this section](https://github.com/novoalab/m6ABasecaller_dev/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at **per-read level**. This module depends on the output of the per-site level, so you will have to run them sequentially. 
+* Please see [this section](https://github.com/novoalab/m6ABasecaller_per_read_analysis/tree/main/PerRead_Analysis) for details on how to analyze m6ABasecaller results at **per-read level**. This module depends on the output of the per-site level, so you will have to run them sequentially. 
 
 
 ## Citation
