@@ -2,7 +2,7 @@
 
 Welcome to the m6ABasecaller Downstream analysis repo :) 
 
-This repo contains the scripts for the downstream analysis of the [m6ABasecaller](https://github.com/novoalab/m6ABasecaller). We applied them to a neuronal differentiation system, for which we report the single-nucleotide and single-molecule predictions.
+This repo contains the scripts for the downstream analysis of the [m6ABasecaller](https://github.com/novoalab/m6ABasecaller). These scripts can be used to obtain single-nucleotide and single-molecule predictions, both at **per-position** and **per-read** level.
 
 ## Table of contents
 - [General Description](#General-description)
@@ -19,7 +19,7 @@ This repo includes command line examples and scripts to analyze the output gener
 
 ## Installation 
 
-Clone this repository in order to have the scripts for the m6A analysis at per position and per read level.
+Clone this repository in order to have the scripts for the m6A analysis at **per-position** and **per-read** level.
 
 ```
 git clone https://github.com/novoalab/m6ABasecaller_per_read_analysis.git
