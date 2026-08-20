@@ -43,7 +43,11 @@ Once you have the ``mod.gz file``, you can proceed to analysis at per-site and p
 
 ## Citation
   
-If you find this work useful, please cite: 
+If you find this work useful, please cite:
+
+Sarah A. Alshawi, Anna Delgado-Tejedor, Srihari Madhavan, Laia Llovera, Rebeca Medina, Cassandra Kontur, Eva Maria Novoa, Jean-Denis Beaudoin. **Single-molecule m6A profiling reveals position-dependent mRNA regulation and non-canonical roles for Ythdf2 in early embryogenesis**.  bioRxiv 2026. https://www.biorxiv.org/content/10.64898/2026.07.03.736379v1.article-info)
+
+or 
 
 Sonia Cruciani, Jacqueline Severino, Anna Delgado-Tejedor, Laia Llovera, Ana Milovanovic, Silvia Beltramone, Adrià Dangla Valls, Ivan Milenkovic, Laura Batlle and Eva Maria Novoa. **Single-molecule analysis of m6A dynamics upon neuronal differentiation and activation** (to be submitted). 
   
