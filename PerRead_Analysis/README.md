@@ -2,7 +2,7 @@
 
 The m6ABasecaller allows the analysis of m6A modifications at single molecule level. 
 
-Before proceeding with this analysis, please first perform the analysis at per position level [here](https://github.com/novoalab/m6ABasecaller/tree/main/PerPosition_Analysis). 
+Before proceeding with this analysis, please first perform the analysis at per position level [here](https://github.com/novoalab/m6ABasecaller_per_read_analysis/tree/main/PerPosition_Analysis). 
 
 Additionally, prior to running this section, please make sure that you have: 
 
